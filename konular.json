@@ -1,0 +1,14 @@
+[
+ {"baslik":"Hidroforunuz\n5 ayda bir\nbakım ister","metin":"Düzenli bakım; ani arızayı, su kesintisini ve yüksek tamir masrafını önler.","maddeler":["Basınç ve tank kontrolü","Salmastra / çark kontrolü","Elektrik ve otomatik kontrolü"],"alt":"Bakım için DM'den yazın"},
+ {"baslik":"Pompa sık\nsık çalışıp\nduruyor mu?","metin":"Bu genelde genleşme tankı havasının bittiğini gösterir. Erken bakılırsa motor yanmaz.","maddeler":["Tank hava basıncı ölçülür","Membran kontrol edilir","Basınç şalteri ayarlanır"],"alt":"Arıza için DM'den yazın"},
+ {"baslik":"Dalgıç pompa\nservisi","metin":"Kuyu ve depo dalgıç pompalarında söküm, tamir, bobinaj ve montaj.","maddeler":["Arıza tespiti yerinde","Çark ve salmastra değişimi","Montaj ve test"],"alt":"Servis için DM'den yazın"},
+ {"baslik":"Apartman\nhidrofor\nbakımı","metin":"Site ve apartmanlarda periyodik bakım anlaşmasıyla su kesintisine son.","maddeler":["5 ayda bir düzenli ziyaret","Bakım raporu","Acil arızada öncelik"],"alt":"Teklif için DM'den yazın"},
+ {"baslik":"Pompadan\nses mi\ngeliyor?","metin":"Uğultu, tıkırtı veya titreşim; rulman, çark ya da kavitasyon belirtisi olabilir.","maddeler":["Rulman kontrolü","Emiş hattı kontrolü","Çark kontrolü"],"alt":"Hemen DM'den yazın"},
+ {"baslik":"Su basıncı\ndüştü mü?","metin":"Düşük basıncın sebebi çoğu zaman pompa değil; filtre, çek valf veya ayar olabilir.","maddeler":["Filtre temizliği","Çek valf kontrolü","Basınç ayarı"],"alt":"Destek için DM'den yazın"},
+ {"baslik":"Pompanız\nsu kaçırıyor\nmu?","metin":"Salmastra kaçağı küçükken giderilmezse motora su girer, masraf büyür.","maddeler":["Mekanik salmastra değişimi","O-ring kontrolü","Sızdırmazlık testi"],"alt":"Servis için DM'den yazın"},
+ {"baslik":"Okul ve\nkurumlara\nhizmet","metin":"Okul, site ve iş yerlerinde hidrofor ve pompa sistemlerinin bakımı ve onarımı.","maddeler":["Planlı bakım takvimi","Hızlı arıza müdahalesi","Yedek parça temini"],"alt":"Bilgi için DM'den yazın"},
+ {"baslik":"Kış gelmeden\npompanızı\nkontrol ettirin","metin":"Donma ve elektrik dalgalanması pompaya zarar verebilir. Önceden bakım en ucuz çözümdür.","maddeler":["Boru ve vana kontrolü","Elektrik pano kontrolü","Koruma ayarları"],"alt":"Randevu için DM'den yazın"},
+ {"baslik":"Basınç\nşalteri\nnedir?","metin":"Pompayı doğru basınçta açıp kapatan parçadır. Ayarı bozulursa pompa yorulur.","maddeler":["Açma / kapama ayarı","Kontak temizliği","Gerekirse değişim"],"alt":"Sorularınız için DM"},
+ {"baslik":"Genleşme\ntankı neden\nönemli?","metin":"Tank, pompanın her musluk açılışında çalışmasını engeller ve ömrünü uzatır.","maddeler":["Ön basınç kontrolü","Membran kontrolü","Tank değişimi"],"alt":"Kontrol için DM'den yazın"},
+ {"baslik":"Yerinde\nhızlı servis","metin":"Ekibimiz sahada; arızaya mümkün olan en kısa sürede müdahale ediyoruz.","maddeler":["Hidrofor","Dalgıç pompa","Sirkülasyon pompası"],"alt":"Ulaşmak için DM'den yazın"}
+]

@@ -1,1 +1,20 @@
-{"kartIndex":1,"son":["kart"],"kullanilanFotolar":[]}
+{
+ "kartIndex": 1,
+ "son": [
+  "kart"
+ ],
+ "kullanilanFotolar": [],
+ "gunler": [
+  {
+   "tarih": "2026-11-05",
+   "storyler": [
+    "soru/lacivert: gece çalışan pompa",
+    "liste/turuncu: su kaçırıyorsa",
+    "buyuk/turkuaz: su kesilmeden önce"
+   ],
+   "post": null
+  }
+ ],
+ "postKartIndex": 5,
+ "postlar": []
+}

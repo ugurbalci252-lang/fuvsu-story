@@ -13,3 +13,9 @@
 12. Acil durum ne yapmalı (stil: liste) — "Pompa su kaçırıyorsa ilk 3 adım"
 Temalar: mavi, lacivert, turkuaz, turuncu, beyaz, yesil — aynı gün içinde farklı temalar kullan.
 Kurallar: fiyat yok; "ücretsiz", "garanti", "7/24" gibi doğrulanmamış vaat yok; müşteri adı/adres/telefon/plaka yok. Doğruluğundan emin olmadığın teknik bilgi yazma.
+
+## Görsel çeşitliliği (kullanıcı isteği: her gün birbirinden farklı görseller, sınır yok)
+- Kartlara "cizim" alanı ekle: hidrofor | dalgic | boru | anahtar | damla | bina | manometre | vana (özgün vektör çizimler, cizimler.js). Aynı gün aynı çizimi iki kez kullanma; çizimsiz kart da olabilir (ör. "buyuk" stil).
+- Stil + tema + çizim kombinasyonunu her gün değiştir; dünkü kombinasyonları (durum.json gunler) tekrarlama.
+- İş fotoğrafları: TARİH SINIRI YOK — Fotoğraflar klasöründeki tüm uygun fotoğraflar kullanılabilir (kullanilanFotolar'da olmayanlar; yeniler öncelikli). Pompa, montaj, tesisat, çalışma anı fotoğraflarının hepsi uygundur. Bu kural görev metnindeki "son 10/14 gün" sınırının yerine geçer.
+- İnternetten başkasına ait fotoğraf/logo/marka görseli KULLANMA (telif). Sadece kendi iş fotoğraflarımız + bizim çizimlerimiz.

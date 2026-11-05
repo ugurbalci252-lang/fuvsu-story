@@ -2,9 +2,10 @@
 //  node render.js <story|post> kart <konuIndex> <cikti.jpg>            (konular.json'dan)
 //  node render.js <story|post> json <icerik.json> <cikti.jpg>          (serbest içerik)
 //  node render.js <story|post> foto <foto.jpg> <cikti.jpg> "<İş türü · İlçe>" [tema]
+// cizim (isteğe bağlı): hidrofor|dalgic|boru|anahtar|damla|bina|manometre|vana
 // icerik.json: {stil:"klasik|soru|bilgi|sss|liste|buyuk", tema:"mavi|lacivert|turkuaz|turuncu|beyaz|yesil",
 //               etiket, baslik (\n ile satır), metin, maddeler:[...], cagri}
-const {chromium}=require('playwright');const fs=require('fs');const path=require('path');
+const {chromium}=require('playwright');const ciz=require('./cizimler.js');const fs=require('fs');const path=require('path');
 const TEL='0501 042 44 57', IG='@fuvsuofficall', BOLGE='İstanbul · Kocaeli · Sakarya';
 const [,,bicim,tur,a,cikti,etiket,temaArg]=process.argv;
 const W=1080,H=bicim==='post'?1350:1920,S=bicim==='post'?0.72:1;
@@ -35,7 +36,9 @@ function kartHtml(k){const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'kla
  else if(st==='liste'){orta=`${k.etiket?`<div class="etk">${esc(k.etiket)}</div>`:''}<h1 style="font-size:${88*S}px">${esc(k.baslik).replace(/\n/g,'<br>')}</h1>${(k.maddeler||[]).map((m,i)=>`<div style="display:flex;gap:${28*S}px;align-items:center;font-size:${50*S}px;margin:${22*S}px 0"><span style="background:${T.vurgu};color:${T.vfg};border-radius:50%;width:${84*S}px;height:${84*S}px;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none">${i+1}</span>${esc(m)}</div>`).join('')}`}
  else if(st==='buyuk'){orta=`<h1 style="font-size:${124*S}px;line-height:1">${esc(k.baslik).replace(/\n/g,'<br>')}</h1><p style="font-size:${54*S}px">${esc(k.metin)}</p>`}
  else{orta=`${k.etiket||k.hizmet?`<div class="etk">${esc(k.etiket||k.hizmet)}</div>`:''}<h1>${esc(k.baslik).replace(/\n/g,'<br>')}</h1><p>${esc(k.metin)}</p>${k.maddeler?.length?`<div class="kutu">${k.maddeler.map(m=>'✔ '+esc(m)).join('<br>')}</div>`:''}`}
- return `<style>${baseCss(T)}${wrap}</style>${ust}<div>${orta}</div><div>${telBlok(T,k.cagri)}</div>`;}
+ const svg=k.cizim?ciz(k.cizim,T.fg==='#fff'?'#ffffff':'#0e6aa8',T.fg==='#fff'?'rgba(255,255,255,.35)':'rgba(14,106,168,.3)'):'';
+ const cz=svg?`<div style="width:${(bicim==='post'?380:560)}px;opacity:.95;margin-bottom:${30*S}px">${svg}</div>`:'';
+ return `<style>${baseCss(T)}${wrap}</style>${ust}<div>${cz}${orta}</div><div>${telBlok(T,k.cagri)}</div>`;}
 let body;
 if(tur==='kart'){const k=JSON.parse(fs.readFileSync(path.join(__dirname,'konular.json')))[+a];body=kartHtml(k);}
 else if(tur==='json'){body=kartHtml(JSON.parse(fs.readFileSync(a)));}

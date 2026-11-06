@@ -22,9 +22,18 @@
     "klasik/mavi/dalgic: dalgıç pompa servisi",
     "buyuk/lacivert/vana: Gebze'den Adapazarı'na bölge"
    ],
-   "muzik": "🎵 Müzik: güçlü, motive edici — Instagram'da ara: motivation, upbeat"
+   "muzik": "🎵 Müzik: güçlü, motive edici — Instagram'da ara: motivation, upbeat",
+   "post": "bilgi/turuncu/hidrofor: büyük pompa miti"
   }
  ],
  "postKartIndex": 5,
- "postlar": []
+ "postlar": [
+  {
+   "tarih": "2026-11-06",
+   "yaklasim": "mit/yanlis-bilinen (bilgi/turuncu/hidrofor)",
+   "tur": "kart",
+   "ilkCumle": "\"Hidrofor alırken en büyüğünü alalım, garantisi olsun\" diyenlerden misiniz?",
+   "google": true
+  }
+ ]
 }

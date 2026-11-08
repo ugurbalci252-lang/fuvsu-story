@@ -230,6 +230,7 @@ const MODELLER = {
 };
 
 // ---------- sahne kur & çek ----------
+if (!window.__oda) {
 const ad = P.get('m') || 'pompa';
 (MODELLER[ad] || MODELLER.pompa)();
 const zemin = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.32 })); zemin.rotation.x = -Math.PI / 2; zemin.receiveShadow = true; scene.add(zemin);
@@ -246,3 +247,5 @@ kam.position.set(mer.x + Math.sin(yaw) * Math.cos(pitch) * uz, mer.y + Math.sin(
 renderer.render(scene, kam);
 const ekran = {}; for (const [k, v] of Object.entries(ankraj)) { const p = new THREE.Vector3(...v).project(kam); ekran[k] = [+((p.x + 1) / 2).toFixed(4), +((1 - p.y) / 2).toFixed(4)]; }
 window.__hazir = { ankraj: ekran };
+}
+export { THREE, P, W, H, renderer, scene, M, ankraj, mesh, silY, silX, silZ, kutu, flans, kanatliMotor, vana, manometre, boru, tabelaDoku, yatayPompa, dikeyPompa, membranTank, pano, MODELLER };

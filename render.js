@@ -12,6 +12,8 @@
 //  etiket, baslik (\n ile satır), metin, maddeler:[...], cagri
 //  karsilastir için: sol:{baslik,metin,sahne,zayif}, sag:{baslik,metin,sahne,zayif}
 //  (eski 'cizim' alanı da çalışır: otomatik olarak uygun renkli sahneye çevrilir)
+//  arkaplan: genel | gece | pompa | tank | pano  → "AFİŞ" stili: gerçekçi pompa dairesi 3B çekimi tam ekran arka plan,
+//           altta büyük başlık (başlıkta *kelime* vurgu rengiyle yazılır), metin, maddeler, telefon. En gösterişli stil.
 //  gorsel : GERÇEKÇİ 3B görsel (öncelikli): hidrofor-a | hidrofor-b | pompa-a | pompa-b | dikey | tank | dalgic | drenaj | vana |
 //           manometre-dusuk | manometre-normal | manometre-yuksek   (3d/gorseller/). gorsel varsa sahne yerine o kullanılır.
 //           etiketler dizi ise sırayla: hidrofor:[tank,vana,manometre,pano,pompa,kollektor] pompa:[motor,salyangoz,basma,emis]
@@ -82,7 +84,20 @@ function sahneSvg(k){const ad=k.sahne||CIZIM_SAHNE[k.cizim];if(!ad)return '';ret
 function otoGorsel(k){if(k.gorsel||k.stil==='karsilastir')return;
  if(k.sahne==='hidrofor')k.gorsel=Math.random()<.5?'hidrofor-a':'hidrofor-b';
  else if(k.sahne==='manometre')k.gorsel=(k.aci??0)<-50?'manometre-dusuk':(k.aci??0)>50?'manometre-yuksek':'manometre-normal';}
-function kartHtml(k){otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
+// ---- AFİŞ stili: gerçekçi pompa dairesi 3B çekimi tam ekran arka plan (3d/arkaplan/) ----
+function afisHtml(k){const T=TEMALAR[k.tema]||TEMALAR.lacivert;const f=path.join(__dirname,'3d','arkaplan',`${k.arkaplan}-${POST?'post':'story'}.jpg`);
+ const img=fs.existsSync(f)?'data:image/jpeg;base64,'+fs.readFileSync(f).toString('base64'):'';const V=k.tema==='turkuaz'?'#5ee0d6':'#ffd23f';const VF='#0b2a4a';
+ const mad=k.maddeler?.length?`<div class="mad">${k.maddeler.map(m=>`<div><b style="background:${V};color:${VF}">✓</b>${esc(m)}</div>`).join('')}</div>`:'';
+ return `<style>${baseCss({...T,fg:'#fff',vurgu:V,vfg:VF,kutu:'rgba(255,255,255,.14)'})}body{background:#0a1220 url(${img}) center/cover no-repeat}
+ .ust-g{position:absolute;left:0;right:0;top:0;height:${380*S}px;background:linear-gradient(rgba(5,10,20,.85),rgba(5,10,20,0))}
+ .alt-g{position:absolute;left:0;right:0;bottom:0;height:${(POST?62:58)}%;background:linear-gradient(rgba(5,10,20,0),rgba(5,10,20,.78) 28%,rgba(5,10,20,.96) 70%)}
+ .afis{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:${100*S}px ${72*S}px ${80*S}px}
+ .afis h1{font-size:${(k.baslikBoyu||104)*S}px;line-height:1.02;text-shadow:0 6px 30px rgba(0,0,0,.55);margin-bottom:${20*S}px}
+ .afis h1 em{font-style:normal;color:${V}}.afis p{font-size:${44*S}px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+ .etk{background:${V};color:${VF}}.serit{width:${120*S}px;height:${10*S}px;border-radius:6px;background:${V};margin-bottom:${26*S}px}</style>
+ <div class="ust-g"></div><div class="alt-g"></div><div class="afis">${ustBlok({...T,vurgu:V,vfg:VF})}<div style="flex:1"></div>
+ ${k.etiket?`<div class="etk">${esc(k.etiket)}</div>`:'<div class="serit"></div>'}<h1>${br(k.baslik).replace(/\*(.+?)\*/g,'<em>$1</em>')}</h1>${k.metin?`<p>${esc(k.metin)}</p>`:''}${mad}<div style="margin-top:${40*S}px">${telBlok({...T,vurgu:V,vfg:VF},k.cagri)}</div></div>`;}
+function kartHtml(k){if(k.arkaplan)return afisHtml(k);otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
  const svg=sahneSvg(k)||(k.gorsel?' ':'');
  const ph=(oran)=>{const yk=Math.round((POST?560:800)*oran);if(k.gorsel){const g=g3Html(k.gorsel,k.etiketler,yk-8);if(g)return `<div class="panel" style="height:${yk}px;padding:${8*S}px">${g}</div>`;}return svg?`<div class="panel" style="height:${yk}px">${svg}</div>`:'';};
  const mad=(isaret)=>k.maddeler?.length?`<div class="mad">${k.maddeler.map((m,i)=>`<div><b>${isaret==='#'?i+1:isaret}</b>${esc(m)}</div>`).join('')}</div>`:'';

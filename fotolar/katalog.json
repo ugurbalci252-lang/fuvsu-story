@@ -1,0 +1,86 @@
+{
+ "pompa-dairesi": {
+  "pexels_id": 10290629,
+  "aciklama": "Gerçek pompa dairesi koridoru, mavi pompalar ve borular (dikey)",
+  "konular": "bakım, hidrofor, pompa dairesi, kurumsal",
+  "kaynak": "https://www.pexels.com/photo/10290629/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "apartmanlar": {
+  "pexels_id": 17082223,
+  "aciklama": "Kırmızı çatılı apartman ve siteler (dikey)",
+  "konular": "site/apartman yöneticileri, bölge vurgusu",
+  "kaynak": "https://www.pexels.com/photo/17082223/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "apartman-cephe": {
+  "pexels_id": 14846410,
+  "aciklama": "Yüksek apartman cephesi (dikey)",
+  "konular": "yönetici mesajı, üst kat su basıncı",
+  "kaynak": "https://www.pexels.com/photo/14846410/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "bina-cephe": {
+  "pexels_id": 11631278,
+  "aciklama": "Modern bina cephesi (yatay)",
+  "konular": "kurumsal, iş merkezi, otel",
+  "kaynak": "https://www.pexels.com/photo/11631278/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "su-akisi": {
+  "pexels_id": 4406593,
+  "aciklama": "Gür akan su (dikey)",
+  "konular": "basınç, su kesintisi, slogan",
+  "kaynak": "https://www.pexels.com/photo/4406593/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "boru-kacak": {
+  "pexels_id": 15206136,
+  "aciklama": "Su kaçıran boru bağlantısı (dikey)",
+  "konular": "arıza, kaçak, acil servis",
+  "kaynak": "https://www.pexels.com/photo/15206136/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "boru-su": {
+  "pexels_id": 32200999,
+  "aciklama": "Borudan akan su (dikey)",
+  "konular": "tahliye, drenaj, debi",
+  "kaynak": "https://www.pexels.com/photo/32200999/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "vana": {
+  "pexels_id": 13726337,
+  "aciklama": "Saha vanası ve boru hattı (dikey)",
+  "konular": "tesisat, vana değişimi",
+  "kaynak": "https://www.pexels.com/photo/13726337/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "flansli-boru": {
+  "pexels_id": 38893871,
+  "aciklama": "Flanşlı çelik borular, gökyüzü (dikey)",
+  "konular": "tesisat, montaj, kaynaklı/flanşlı hat",
+  "kaynak": "https://www.pexels.com/photo/38893871/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "fabrika": {
+  "pexels_id": 15866139,
+  "aciklama": "Sanayi tesisi boru ve yapıları (dikey)",
+  "konular": "fabrika, OSB, sanayi",
+  "kaynak": "https://www.pexels.com/photo/15866139/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "cati-depolari": {
+  "pexels_id": 17854867,
+  "aciklama": "Çatıdaki su depoları (dikey)",
+  "konular": "depo, su deposu, hidrofor beslemesi",
+  "kaynak": "https://www.pexels.com/photo/17854867/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ },
+ "musluk-damla": {
+  "pexels_id": 36215888,
+  "aciklama": "Damlayan musluk (dikey)",
+  "konular": "düşük basınç, su gelmiyor",
+  "kaynak": "https://www.pexels.com/photo/36215888/",
+  "lisans": "Pexels Lisansı (ticari kullanım serbest, kaynak gösterme gerekmez)"
+ }
+}

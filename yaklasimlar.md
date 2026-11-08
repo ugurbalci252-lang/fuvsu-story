@@ -39,3 +39,9 @@ Kurallar: fiyat yok; "ücretsiz", "garanti", "7/24" gibi doğrulanmamış vaat y
 - Her gün story'lerin en az 1-2 tanesi ve gönderilerin çoğu AFİŞ stilinde olsun (reklam/hizmet/slogan/yöneticiye mesaj konuları için ideal). Bilgi/nasıl çalışır konularında 3B `gorsel` + infografik kullan.
 - Başlık kısa ve vurucu olsun (2 satır, en fazla ~32 harf), bir kelimesini *yıldız* içine alarak vurgula. etiket kısa üst yazı olur (emoji koyma). maddeler (en fazla 3, kısa) ikonlu hizmet satırına dönüşür; yoksa varsayılan hizmetler yazılır. Aynı gün aynı arkaplanı iki kez kullanma.
 - Yeni arkaplan gerekirse: 3d/oda3d.js içine varyant ekle → `node 3d/uret-oda.js <varyant> 3d/arkaplan/<varyant>-story.jpg 1080 1920` ve `...-post.jpg 1080 1350`.
+
+## GERÇEK FOTOĞRAFLI AFİŞ — EN ÖNCELİKLİ (kullanıcı 08.11: "orijinal resimleri de kullanabilirsin, daha güzel/profesyonel")
+- `foto` alanı: fotolar/katalog.json içindeki gerçek fotoğraflar (Pexels Lisansı: ticari kullanım serbest, marka/logo görünmeyenler seçildi): pompa-dairesi, apartmanlar, apartman-cephe, bina-cephe, su-akisi, boru-kacak, boru-su, vana, flansli-boru, fabrika, cati-depolari, musluk-damla. `odak` ile kadraj ("50% 30%").
+- Günlük story'lerin en az yarısı ve gönderilerin çoğu `foto` afiş olsun; kalanlar 3B `arkaplan` afiş veya 3B `gorsel` infografik. Aynı fotoğrafı 3 gün içinde tekrar kullanma (durum.json'a bak).
+- Fotoğrafta insan yüzü varsa "ekibimiz" gibi yazma (onlar bizim çalışanımız değil). Katalogdaki fotoğraflar ekipman/ortam fotoğrafıdır.
+- Yeni fotoğraf eklemek: yerleşik tarayıcıda pexels.com'dan marka görünmeyen fotoğrafı seç, indir, fotolar/ içine ekle ve katalog.json'u güncelle (haftalık gözden geçirmede yapılabilir).

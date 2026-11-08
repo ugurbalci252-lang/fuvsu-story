@@ -12,6 +12,8 @@
 //  etiket, baslik (\n ile satır), metin, maddeler:[...], cagri
 //  karsilastir için: sol:{baslik,metin,sahne,zayif}, sag:{baslik,metin,sahne,zayif}
 //  (eski 'cizim' alanı da çalışır: otomatik olarak uygun renkli sahneye çevrilir)
+//  foto   : GERÇEK FOTOĞRAF arka planlı afiş (fotolar/katalog.json: pompa-dairesi, apartmanlar, apartman-cephe, bina-cephe, su-akisi,
+//           boru-kacak, boru-su, vana, flansli-boru, fabrika, cati-depolari, musluk-damla). odak: "50% 30%" (kadraj). Afiş düzenini kullanır.
 //  arkaplan: genel | gece | pompa | tank | pano  → "AFİŞ" stili: gerçekçi pompa dairesi 3B çekimi tam ekran arka plan,
 //           altta büyük başlık (başlıkta *kelime* vurgu rengiyle yazılır), metin, maddeler, telefon. En gösterişli stil.
 //  gorsel : GERÇEKÇİ 3B görsel (öncelikli): hidrofor-a | hidrofor-b | pompa-a | pompa-b | dikey | tank | dalgic | drenaj | vana |
@@ -87,11 +89,11 @@ function otoGorsel(k){if(k.gorsel||k.stil==='karsilastir')return;
 // ---- AFİŞ stili (profesyonel): gerçekçi pompa dairesi 3B çekimi tam ekran arka plan (3d/arkaplan/) ----
 const IKON={servis:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>',bakim:'<circle cx="12" cy="13" r="8"/><path d="M12 13l4-3M8 5l-1-2M16 5l1-2"/>',tesisat:'<path d="M3 7h7v4h4V7h7M10 11v6h4v-6M7 17h10"/>',montaj:'<path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"/>',ariza:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',damla:'<path d="M12 3c-3 4.5-6 7.6-6 11a6 6 0 0 0 12 0c0-3.4-3-6.5-6-11z"/>'};
 const ikon=(ad,r,c)=>`<svg viewBox="0 0 24 24" width="${r}" height="${r}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IKON[ad]||IKON.servis}</svg>`;
-function afisHtml(k){const T=TEMALAR[k.tema]||TEMALAR.lacivert;const f=path.join(__dirname,'3d','arkaplan',`${k.arkaplan}-${POST?'post':'story'}.jpg`);
+function afisHtml(k){const T=TEMALAR[k.tema]||TEMALAR.lacivert;const f=k.foto?path.join(__dirname,'fotolar',`${k.foto}.jpg`):path.join(__dirname,'3d','arkaplan',`${k.arkaplan}-${POST?'post':'story'}.jpg`);
  const img=fs.existsSync(f)?'data:image/jpeg;base64,'+fs.readFileSync(f).toString('base64'):'';const V=k.tema==='turkuaz'?'#4fe3d6':k.tema==='turuncu'?'#ff9d2e':'#ffcf33';
  const hiz=(k.hizmetler||[['servis','Arıza servisi'],['bakim','Periyodik bakım'],['tesisat','Tesisat · Montaj']]).slice(0,3);
  const maddeler=k.maddeler?.length?k.maddeler.slice(0,3).map((m,i)=>[['servis','bakim','tesisat'][i],m]):hiz;
- return `<style>${baseCss({...T,fg:'#fff'})}body{background:#070c14 url(${img}) center/cover no-repeat}
+ return `<style>${baseCss({...T,fg:'#fff'})}body{background:#070c14 url(${img}) ${k.odak||'center'}/cover no-repeat}.ton{position:absolute;inset:0;background:linear-gradient(160deg,rgba(10,40,90,.28),rgba(0,0,0,0) 50%,rgba(10,40,90,.22));mix-blend-mode:multiply}
  .vin{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,transparent 45%,rgba(3,7,14,.55) 100%)}
  .ug{position:absolute;left:0;right:0;top:0;height:${300*S}px;background:linear-gradient(rgba(4,9,18,.78),rgba(4,9,18,0))}
  .ag{position:absolute;left:0;right:0;bottom:0;height:${POST?64:57}%;background:linear-gradient(rgba(4,9,18,0),rgba(4,9,18,.72) 22%,rgba(4,9,18,.95) 58%,#040912 100%)}
@@ -110,7 +112,7 @@ function afisHtml(k){const T=TEMALAR[k.tema]||TEMALAR.lacivert;const f=path.join
  .cta small{display:block;color:#5d6b7a;font-size:${22*S}px;letter-spacing:3px;font-weight:700;text-transform:uppercase}.cta b{display:block;color:#0b1a2c;font-size:${62*S}px;letter-spacing:1px;line-height:1.05}
  .cta .ig{color:#0b1a2c;font-size:${24*S}px;font-weight:600;text-align:right;line-height:1.3;opacity:.75}
  .alt2{display:flex;justify-content:center;gap:${18*S}px;margin-top:${22*S}px;font-size:${22*S}px;letter-spacing:3px;opacity:.6}</style>
- <div class="vin"></div><div class="ug"></div><div class="ag"></div>
+ ${k.foto?'<div class="ton"></div>':''}<div class="vin"></div><div class="ug"></div><div class="ag"></div>
  <div class="af"><div class="bas"><div class="lg">${logo({vurgu:V,vfg:'#0b1a2c'})}<div>FUVSU POMPA<small>TEKNİK SERVİS</small></div></div><div class="bolge">${esc(k.bolge||'GEBZE · KOCAELİ · İSTANBUL')}</div></div>
  <div style="flex:1"></div>
  <div class="ust-yazi">${esc(k.etiket||'Pompa · Hidrofor · Tesisat').replace(/^[^\wÇĞİÖŞÜçğıöşü]+/,'')}</div>
@@ -118,7 +120,7 @@ function afisHtml(k){const T=TEMALAR[k.tema]||TEMALAR.lacivert;const f=path.join
  <div class="hz">${maddeler.map(([i,t])=>`<div><span>${ikon(i,36*S,V)}</span>${esc(t)}</div>`).join('')}</div>
  <div class="cta"><div class="s"><div class="tl"><svg viewBox="0 0 24 24" width="${52*S}" height="${52*S}"><path fill="#0b1a2c" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div><div><small>${esc(k.cagri||'Hemen arayın')}</small><b>${TEL}</b></div></div><div class="ig">${IG}<br>WhatsApp</div></div>
  <div class="alt2"><span>İSTANBUL</span><span>·</span><span>KOCAELİ</span><span>·</span><span>SAKARYA</span></div></div>`;}
-function kartHtml(k){if(k.arkaplan)return afisHtml(k);otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
+function kartHtml(k){if(k.arkaplan||k.foto)return afisHtml(k);otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
  const svg=sahneSvg(k)||(k.gorsel?' ':'');
  const ph=(oran)=>{const yk=Math.round((POST?560:800)*oran);if(k.gorsel){const g=g3Html(k.gorsel,k.etiketler,yk-8);if(g)return `<div class="panel" style="height:${yk}px;padding:${8*S}px">${g}</div>`;}return svg?`<div class="panel" style="height:${yk}px">${svg}</div>`:'';};
  const mad=(isaret)=>k.maddeler?.length?`<div class="mad">${k.maddeler.map((m,i)=>`<div><b>${isaret==='#'?i+1:isaret}</b>${esc(m)}</div>`).join('')}</div>`:'';

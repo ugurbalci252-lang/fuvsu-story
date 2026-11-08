@@ -4,7 +4,7 @@
 //  node render.js <story|post> foto <foto.jpg> <cikti.jpg> "<İş türü · İlçe>" [tema]
 //
 // icerik.json alanları:
-//  stil   : klasik | soru | bilgi | sss | liste | buyuk | infografik | karsilastir
+//  stil   : klasik | soru | bilgi | sss | liste | buyuk | infografik | karsilastir | vitrin (3B ürün + adımlar, bkz. vitrinHtml)
 //  tema   : mavi | lacivert | turkuaz | turuncu | beyaz | yesil
 //  sahne  : hidrofor | dalgic | bina | tank | manometre | drenaj | arac | musluk | alet | pano   (renkli detaylı çizim, sahneler.js)
 //  etiketler: ["Basınç tankı","Vana",...]  (sahnedeki numaralı noktalara yazılır; infografik stilinde açıklamalar 'maddeler'den gelir)
@@ -113,14 +113,53 @@ function afisHtml(k){const T=TEMALAR[k.tema]||TEMALAR.lacivert;const f=k.foto?pa
  .cta .ig{color:#0b1a2c;font-size:${24*S}px;font-weight:600;text-align:right;line-height:1.3;opacity:.75}
  .alt2{display:flex;justify-content:center;gap:${18*S}px;margin-top:${22*S}px;font-size:${22*S}px;letter-spacing:3px;opacity:.6}</style>
  ${k.foto?'<div class="ton"></div>':''}<div class="vin"></div><div class="ug"></div><div class="ag"></div>
- <div class="af"><div class="bas"><div class="lg">${logo({vurgu:V,vfg:'#0b1a2c'})}<div>FUVSU POMPA<small>TEKNİK SERVİS</small></div></div><div class="bolge">${esc(k.bolge||'GEBZE · KOCAELİ · İSTANBUL')}</div></div>
+ <div class="af"><div class="bas"><div class="lg">${logo({vurgu:V,vfg:'#0b1a2c'})}<div>FUVSU POMPA<small>TEKNİK SERVİS</small></div></div><div class="bolge">${esc(k.bolge||'İSTANBUL · KOCAELİ · SAKARYA')}</div></div>
  <div style="flex:1"></div>
  <div class="ust-yazi">${esc(k.etiket||'Pompa · Hidrofor · Tesisat').replace(/^[^\wÇĞİÖŞÜçğıöşü]+/,'')}</div>
  <h1>${br(k.baslik).replace(/\*(.+?)\*/g,'<em>$1</em>')}</h1>${k.metin?`<p>${esc(k.metin)}</p>`:''}
  <div class="hz">${maddeler.map(([i,t])=>`<div><span>${ikon(i,36*S,V)}</span>${esc(t)}</div>`).join('')}</div>
  <div class="cta"><div class="s"><div class="tl"><svg viewBox="0 0 24 24" width="${52*S}" height="${52*S}"><path fill="#0b1a2c" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div><div><small>${esc(k.cagri||'Hemen arayın')}</small><b>${TEL}</b></div></div><div class="ig">${IG}<br>WhatsApp</div></div>
  <div class="alt2"><span>İSTANBUL</span><span>·</span><span>KOCAELİ</span><span>·</span><span>SAKARYA</span></div></div>`;}
-function kartHtml(k){if(k.arkaplan||k.foto)return afisHtml(k);otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
+// ---- VİTRİN stili (haftalık yenilik 2026-11-08): bulanık gerçek foto/3B oda arka planı + ortada parlayan 3B ürün (pompa öne çıkar)
+//  + yansımalı zemin + "Nasıl çalışıyoruz" numaralı adım zaman çizelgesi + beyaz telefon kartı.
+//  alanlar: stil:"vitrin", gorsel (zorunlu, 3B ürün), foto|arkaplan (arka plan), etiket, baslik (*vurgu*), metin, adimlar:[3-4 kısa adım], cagri, tema
+function vitrinHtml(k){const f=k.foto?path.join(__dirname,'fotolar',`${k.foto}.jpg`):path.join(__dirname,'3d','arkaplan',`${k.arkaplan||'genel'}-${POST?'post':'story'}.jpg`);
+ const bg=fs.existsSync(f)?'data:image/jpeg;base64,'+fs.readFileSync(f).toString('base64'):'';const gf=path.join(G3,(k.gorsel||'hidrofor-a')+'.png');
+ const g=fs.existsSync(gf)?'data:image/png;base64,'+fs.readFileSync(gf).toString('base64'):'';const V=k.tema==='turkuaz'?'#4fe3d6':k.tema==='turuncu'?'#ff9d2e':'#ffcf33';
+ const ad=(k.adimlar||['Arayın, sorunu anlatın','Yerinde tespit','Onarım · test · teslim']).slice(0,4);const GY=POST?560:900;
+ return `<style>${baseCss({...TEMALAR.lacivert,fg:'#fff'})}body{background:#060b14}
+ .bgi{position:absolute;inset:-40px;background:url(${bg}) ${k.odak||'center'}/cover;filter:blur(14px) brightness(.42) saturate(1.15)}
+ .bgk{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,11,20,.55),rgba(6,11,20,.15) 30%,rgba(6,11,20,.7) 62%,#060b14 92%)}
+ .isik{position:absolute;left:50%;top:${(POST?120:200)+GY*0.45}px;width:${GY*1.25}px;height:${GY*1.25}px;transform:translate(-50%,-50%);background:radial-gradient(circle,${V}55 0%,${V}18 35%,transparent 68%);filter:blur(10px)}
+ .v{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:${84*S}px ${76*S}px ${70*S}px}
+ .bas{display:flex;justify-content:space-between;align-items:center}
+ .lg{display:flex;align-items:center;gap:${18*S}px;font-weight:700;font-size:${36*S}px;letter-spacing:6px}.lg small{display:block;font-weight:500;font-size:${21*S}px;letter-spacing:3px;opacity:.75;margin-top:4px}
+ .bolge{border:1.5px solid rgba(255,255,255,.35);border-radius:40px;padding:${10*S}px ${24*S}px;font-size:${21*S}px;letter-spacing:3px;font-weight:500;background:rgba(255,255,255,.06)}
+ .urun{position:relative;height:${GY}px;margin-top:${10*S}px}
+ .urun img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 30px 40px rgba(0,0,0,.6))}
+ .urun .yans{position:absolute;left:0;right:0;top:100%;height:${GY*0.28}px;overflow:hidden;opacity:.22;-webkit-mask-image:linear-gradient(rgba(0,0,0,.9),transparent 80%)}
+ .urun .yans img{position:absolute;left:0;top:${-GY}px;width:100%;height:${GY}px;object-fit:contain;transform:scaleY(-1);transform-origin:50% 100%;filter:blur(2px)}
+ .zemin{position:absolute;left:12%;right:12%;bottom:-2%;height:6%;background:radial-gradient(ellipse,rgba(0,0,0,.65),transparent 70%)}
+ .rz{position:absolute;right:0;top:${30*S}px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);border-radius:${20*S}px;padding:${14*S}px ${22*S}px;font-size:${22*S}px;letter-spacing:3px;font-weight:700;text-transform:uppercase;line-height:1.35}.rz b{display:block;color:${V};font-size:${30*S}px;letter-spacing:1px}
+ .ust-yazi{display:flex;align-items:center;gap:${18*S}px;color:${V};font-weight:700;font-size:${26*S}px;letter-spacing:5px;text-transform:uppercase;margin:${(POST?40:70)*S}px 0 ${18*S}px}.ust-yazi:before{content:"";width:${56*S}px;height:3px;background:${V};border-radius:2px}
+ .v h1{font-size:${(k.baslikBoyu||86)*S}px;line-height:1.04;letter-spacing:-1.5px;font-weight:700;margin-bottom:${18*S}px}.v h1 em{font-style:normal;color:${V}}
+ .v p{font-size:${34*S}px;line-height:1.42;opacity:.8}
+ .ad{display:flex;margin-top:${34*S}px;position:relative}.ad:before{content:"";position:absolute;left:${40*S}px;right:${40*S}px;top:${36*S}px;height:2px;background:linear-gradient(90deg,${V},rgba(255,255,255,.25))}
+ .ad div{flex:1;position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:${14*S}px;font-size:${26*S}px;font-weight:500;line-height:1.25;padding-right:${12*S}px}
+ .ad b{width:${72*S}px;height:${72*S}px;border-radius:50%;background:#0b1626;border:2px solid ${V};color:${V};display:flex;align-items:center;justify-content:center;font-size:${32*S}px;box-shadow:0 0 0 ${8*S}px #060b14}
+ .cta{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:${26*S}px;padding:${22*S}px ${26*S}px ${22*S}px ${22*S}px;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+ .cta .s{display:flex;align-items:center;gap:${22*S}px}.cta .tl{width:${96*S}px;height:${96*S}px;border-radius:${22*S}px;background:${V};display:flex;align-items:center;justify-content:center;flex:none}
+ .cta small{display:block;color:#5d6b7a;font-size:${22*S}px;letter-spacing:3px;font-weight:700;text-transform:uppercase}.cta b{display:block;color:#0b1a2c;font-size:${62*S}px;letter-spacing:1px;line-height:1.05}
+ .cta .ig{color:#0b1a2c;font-size:${24*S}px;font-weight:600;text-align:right;line-height:1.3;opacity:.75}</style>
+ <div class="bgi"></div><div class="bgk"></div><div class="isik"></div>
+ <div class="v"><div class="bas"><div class="lg">${logo({vurgu:V,vfg:'#0b1a2c'})}<div>FUVSU POMPA<small>TEKNİK SERVİS</small></div></div><div class="bolge">${esc(k.bolge||'İSTANBUL · KOCAELİ · SAKARYA')}</div></div>
+ <div class="urun"><div class="zemin"></div><img src="${g}"><div class="yans"><img src="${g}"></div>${k.rozet?`<div class="rz">${esc(k.rozet[0])}<b>${esc(k.rozet[1]||'')}</b></div>`:''}</div><div style="flex:1"></div>
+ <div class="ust-yazi">${esc(k.etiket||'Nasıl çalışıyoruz')}</div>
+ <h1>${br(k.baslik).replace(/\*(.+?)\*/g,'<em>$1</em>')}</h1>${k.metin?`<p>${esc(k.metin)}</p>`:''}
+ <div class="ad">${ad.map((t,i)=>`<div><b>${i+1}</b>${esc(t)}</div>`).join('')}</div>
+ <div style="height:${30*S}px"></div>
+ <div class="cta"><div class="s"><div class="tl"><svg viewBox="0 0 24 24" width="${52*S}" height="${52*S}"><path fill="#0b1a2c" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></div><div><small>${esc(k.cagri||'Hemen arayın')}</small><b>${TEL}</b></div></div><div class="ig">${IG}<br>WhatsApp</div></div></div>`;}
+function kartHtml(k){if(k.stil==='vitrin')return vitrinHtml(k);if(k.arkaplan||k.foto)return afisHtml(k);otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
  const svg=sahneSvg(k)||(k.gorsel?' ':'');
  const ph=(oran)=>{const yk=Math.round((POST?560:800)*oran);if(k.gorsel){const g=g3Html(k.gorsel,k.etiketler,yk-8);if(g)return `<div class="panel" style="height:${yk}px;padding:${8*S}px">${g}</div>`;}return svg?`<div class="panel" style="height:${yk}px">${svg}</div>`:'';};
  const mad=(isaret)=>k.maddeler?.length?`<div class="mad">${k.maddeler.map((m,i)=>`<div><b>${isaret==='#'?i+1:isaret}</b>${esc(m)}</div>`).join('')}</div>`:'';
@@ -147,5 +186,5 @@ body=`<style>${baseCss({...T,fg:'#fff'})}body{background:${T.bg}}
 .foto .rz{position:absolute;top:${30*S}px;left:${30*S}px;background:${T.vurgu};color:${T.vfg};border-radius:40px;padding:${10*S}px ${26*S}px;font-weight:700;font-size:${30*S}px}</style>
 ${dekor(T)}<div class="ic">${ustBlok(T)}<div class="foto"><div class="rz">📸 Sahadan</div>${etiket?`<div class="is">${esc(etiket)}</div>`:''}</div><div>${telBlok(T,'Servis · Tesisat · Montaj')}</div></div>`;}
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:W,height:H}});
-await p.setContent('<!doctype html><meta charset="utf-8">'+body,{waitUntil:'load'});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(250);
+await p.setContent('<!doctype html><html lang="tr"><meta charset="utf-8">'+body,{waitUntil:'load'});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(250);
 await p.screenshot({path:cikti,type:'jpeg',quality:92});await b.close();})();

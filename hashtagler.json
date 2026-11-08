@@ -1,2 +1,39 @@
-{"genel":["#hidrofor","#hidroforbakımı","#pompaservisi","#dalgıçpompa","#sutesisatı","#pompamontajı","#hidroforservisi","#tesisat","#pompatamiri","#suarızası"],
- "bolge":["#istanbul","#kocaeli","#sakarya","#izmit","#gebze","#adapazarı","#istanbulhidrofor","#kocaelitesisat","#sakaryatesisat"]}
+{
+ "genel": [
+  "#hidrofor",
+  "#hidroforbakımı",
+  "#hidroforservisi",
+  "#pompaservisi",
+  "#pompatamiri",
+  "#pompamontajı",
+  "#dalgıçpompa",
+  "#pompadairesi",
+  "#sutesisatı",
+  "#tesisat",
+  "#suarızası",
+  "#hidroforarıza"
+ ],
+ "yonetici": [
+  "#apartmanyöneticisi",
+  "#siteyönetimi",
+  "#apartmanyönetimi",
+  "#binabakımı"
+ ],
+ "bolge": [
+  "#istanbul",
+  "#kocaeli",
+  "#sakarya",
+  "#izmit",
+  "#gebze",
+  "#darıca",
+  "#çayırova",
+  "#pendik",
+  "#tuzla",
+  "#kartal",
+  "#adapazarı",
+  "#istanbulhidrofor",
+  "#kocaelitesisat",
+  "#sakaryatesisat"
+ ],
+ "not": "Gönderi başına 10-15 etiket: genel'den 6-8, bölgeden 4-5 (gönderide geçen ilçe varsa o), yönetici konularında yonetici'den 2-3. Her gün aynı seti kopyalama, karıştır."
+}

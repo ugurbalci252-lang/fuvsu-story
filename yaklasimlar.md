@@ -45,3 +45,19 @@ Kurallar: fiyat yok; "ücretsiz", "garanti", "7/24" gibi doğrulanmamış vaat y
 - Günlük story'lerin en az yarısı ve gönderilerin çoğu `foto` afiş olsun; kalanlar 3B `arkaplan` afiş veya 3B `gorsel` infografik. Aynı fotoğrafı 3 gün içinde tekrar kullanma (durum.json'a bak).
 - Fotoğrafta insan yüzü varsa "ekibimiz" gibi yazma (onlar bizim çalışanımız değil). Katalogdaki fotoğraflar ekipman/ortam fotoğrafıdır.
 - Yeni fotoğraf eklemek: yerleşik tarayıcıda pexels.com'dan marka görünmeyen fotoğrafı seç, indir, fotolar/ içine ekle ve katalog.json'u güncelle (haftalık gözden geçirmede yapılabilir).
+
+## VİTRİN stili (yenilik 2026-11-08) — pompayı kahraman yapar
+- `stil:"vitrin"` + `gorsel` (3B ürün) + `foto` veya `arkaplan` (bulanık arka plan) + `adimlar` (3 kısa adım, ~22 harf) + `baslik` (*vurgu*) + isteğe bağlı `rozet:["Servis","Bakım · Montaj"]`.
+- Ortada parlayan 3B pompa, altında "Nasıl çalışıyoruz" 1-2-3 zaman çizelgesi, beyaz telefon kartı. Hizmet tanıtımı, montaj/yenileme, bakım anlaşması konuları için ideal.
+- En iyi görünen görseller: hidrofor-a, hidrofor-b, pompa-a, pompa-b, dikey, tank, drenaj. `dalgic` görseli sağdan kesik çıkıyor → vitrinde kullanma.
+- Haftada 2-3 kez kullan (1 story + 1 gönderi gibi); aynı gün afişle birlikte olabilir ama aynı görselle olmasın.
+
+## Haftalık öğrenilenler (son güncelleme: 2026-11-08, 1. gözden geçirme)
+- Veri çok az: hesap ~25 takipçi; 7 günde 1 gönderi ölçüldü (06.11 "büyük pompa miti", bilgi/turuncu/hidrofor kartı): erişim 14, görüntülenme 38, 6 beğeni, etkileşim oranı ~%43 (erişime göre iyi). Kaydetme/paylaşım 0.
+- Story metrikleri Metricool'a düşmedi (satır yok) — story'ler büyük ihtimalle Metricool üzerinden değil elle atılıyor. Story başarısı şimdilik ölçülemiyor; hesap erişimi 05.11: 13, 06.11: 16 kişi (4 story + gönderi olan gün biraz daha yüksek).
+- Takipçi: 26 → 25 (−1). Takipçi kazanmak için gönderilerde "kaydet / yöneticinize gönderin" çağrısı ekle (kaydetme ve paylaşım 0).
+- Mit/yanlış bilinen yaklaşımı ilk gönderide iyi etkileşim aldı → gönderilerde haftada en az 1 mit/bilgi tutalım.
+- 08.11'den itibaren gerçek foto afiş + 3B arka plan afiş + vitrin devrede; gelecek hafta bunları eski düz kartlarla (05-06.11) karşılaştır.
+- Gönderi saati: 06.11 gönderisi 08:03'te çıktı. Farklı saat denemek için gelecek hafta 1 gönderiyi akşam 19:00-21:00 arası planla, sonucu karşılaştır.
+- Daha fazla veri için: her gün en az 1 gönderi (story'ye ek) — hesap küçükken gönderi erişimi takipçi dışı keşfe açılan tek kanal.
+- hashtagler.json yenilendi: pompadairesi/hidroforarıza + yönetici etiketleri + ilçe etiketleri (darıca, çayırova, pendik, tuzla, kartal). 10-15 etiket, karışık kullan.

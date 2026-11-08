@@ -2,53 +2,89 @@
 //  node render.js <story|post> kart <konuIndex> <cikti.jpg>            (konular.json'dan)
 //  node render.js <story|post> json <icerik.json> <cikti.jpg>          (serbest içerik)
 //  node render.js <story|post> foto <foto.jpg> <cikti.jpg> "<İş türü · İlçe>" [tema]
-// cizim (isteğe bağlı): hidrofor|dalgic|boru|anahtar|damla|bina|manometre|vana
-// icerik.json: {stil:"klasik|soru|bilgi|sss|liste|buyuk", tema:"mavi|lacivert|turkuaz|turuncu|beyaz|yesil",
-//               etiket, baslik (\n ile satır), metin, maddeler:[...], cagri}
-const {chromium}=require('playwright');const ciz=require('./cizimler.js');const fs=require('fs');const path=require('path');
+//
+// icerik.json alanları:
+//  stil   : klasik | soru | bilgi | sss | liste | buyuk | infografik | karsilastir
+//  tema   : mavi | lacivert | turkuaz | turuncu | beyaz | yesil
+//  sahne  : hidrofor | dalgic | bina | tank | manometre | drenaj | arac | musluk | alet | pano   (renkli detaylı çizim, sahneler.js)
+//  etiketler: ["Basınç tankı","Vana",...]  (sahnedeki numaralı noktalara yazılır; infografik stilinde açıklamalar 'maddeler'den gelir)
+//  aci    : manometre ibresi açısı (-120 düşük … 0 orta … 120 yüksek)   zayif: musluk sahnesinde zayıf akış (true/false)
+//  etiket, baslik (\n ile satır), metin, maddeler:[...], cagri
+//  karsilastir için: sol:{baslik,metin,sahne,zayif}, sag:{baslik,metin,sahne,zayif}
+//  (eski 'cizim' alanı da çalışır: otomatik olarak uygun renkli sahneye çevrilir)
+const {chromium}=require('playwright');const sahne=require('./sahneler.js');const fs=require('fs');const path=require('path');
 const TEL='0501 042 44 57', IG='@fuvsuofficall', BOLGE='İstanbul · Kocaeli · Sakarya';
 const [,,bicim,tur,a,cikti,etiket,temaArg]=process.argv;
-const W=1080,H=bicim==='post'?1350:1920,S=bicim==='post'?0.72:1;
+const POST=bicim==='post';const W=1080,H=POST?1350:1920,S=POST?0.74:1;
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const br=s=>esc(s).replace(/\n/g,'<br>');
+const FONT=f=>'data:font/ttf;base64,'+fs.readFileSync(path.join(__dirname,'fontlar',f)).toString('base64');
+const CIZIM_SAHNE={hidrofor:'hidrofor',dalgic:'dalgic',bina:'bina',manometre:'manometre',vana:'pano',damla:'musluk',boru:'drenaj',anahtar:'alet'};
 const TEMALAR={
- mavi:{bg:'linear-gradient(160deg,#0b3d6e 0%,#0e6aa8 55%,#19a0d8 100%)',fg:'#fff',kutu:'rgba(255,255,255,.14)',vurgu:'#ffd23f',vfg:'#0b2a4a'},
- lacivert:{bg:'linear-gradient(170deg,#0a1a2f 0%,#12304f 100%)',fg:'#fff',kutu:'rgba(255,255,255,.08)',vurgu:'#ffd23f',vfg:'#0a1a2f'},
- turkuaz:{bg:'linear-gradient(160deg,#00796b 0%,#00a5a0 60%,#3fd0c9 100%)',fg:'#fff',kutu:'rgba(255,255,255,.16)',vurgu:'#fff',vfg:'#00695c'},
- turuncu:{bg:'linear-gradient(160deg,#e65100 0%,#f57c00 55%,#ffa726 100%)',fg:'#fff',kutu:'rgba(255,255,255,.17)',vurgu:'#0b2a4a',vfg:'#fff'},
- beyaz:{bg:'linear-gradient(170deg,#ffffff 0%,#e8f3fb 100%)',fg:'#0b2a4a',kutu:'rgba(14,106,168,.09)',vurgu:'#0e6aa8',vfg:'#fff'},
- yesil:{bg:'linear-gradient(160deg,#1b5e20 0%,#2e7d32 55%,#66bb6a 100%)',fg:'#fff',kutu:'rgba(255,255,255,.15)',vurgu:'#ffd23f',vfg:'#1b3a1c'}};
-function telBlok(T,cagri){return `<div class="tel" style="background:${T.vurgu};color:${T.vfg}">📞<div><small>${esc(cagri||'Hemen arayın')}</small>${TEL}</div></div><div class="alt"><span>${BOLGE}</span><span>${IG}</span></div>`}
-const baseCss=(T)=>`*{margin:0;box-sizing:border-box}body{width:${W}px;height:${H}px;font-family:"DejaVu Sans",Arial,sans-serif;color:${T.fg};overflow:hidden}
-.ust{font-size:${44*S}px;letter-spacing:6px;font-weight:700}.ust small{display:block;font-size:${28*S}px;letter-spacing:2px;opacity:.85;margin-top:8px;font-weight:400}
-.tel{border-radius:${30*S}px;padding:${34*S}px ${44*S}px;font-weight:800;font-size:${74*S}px;letter-spacing:1px;display:flex;align-items:center;gap:${22*S}px}
-.tel small{display:block;font-size:${30*S}px;font-weight:600;letter-spacing:0;margin-bottom:4px}
-.alt{display:flex;justify-content:space-between;font-size:${30*S}px;opacity:.9;margin-top:${26*S}px}
-.etk{display:inline-block;background:${T.kutu};border-radius:40px;padding:${12*S}px ${30*S}px;font-size:${32*S}px;font-weight:700;margin-bottom:${30*S}px}
-h1{font-size:${100*S}px;line-height:1.05;margin-bottom:${36*S}px}p{font-size:${48*S}px;line-height:1.35}
-.kutu{background:${T.kutu};border-radius:${34*S}px;padding:${40*S}px ${50*S}px;margin-top:${50*S}px;font-size:${44*S}px;line-height:1.45}`;
+ mavi:{bg:'linear-gradient(165deg,#062b52 0%,#0b4f8f 45%,#1590d6 100%)',fg:'#fff',kutu:'rgba(255,255,255,.13)',vurgu:'#ffd23f',vfg:'#0b2a4a',panel:'radial-gradient(circle at 50% 40%,rgba(255,255,255,.28),rgba(255,255,255,.06) 70%)',dalga:'#5fc3ff'},
+ lacivert:{bg:'linear-gradient(170deg,#050f1e 0%,#0d2440 55%,#16406b 100%)',fg:'#fff',kutu:'rgba(255,255,255,.08)',vurgu:'#ffd23f',vfg:'#0a1a2f',panel:'radial-gradient(circle at 50% 40%,rgba(95,195,255,.25),rgba(255,255,255,.03) 70%)',dalga:'#2f80c9'},
+ turkuaz:{bg:'linear-gradient(165deg,#004d47 0%,#00807a 50%,#18b5ad 100%)',fg:'#fff',kutu:'rgba(255,255,255,.15)',vurgu:'#ffffff',vfg:'#00695c',panel:'radial-gradient(circle at 50% 40%,rgba(255,255,255,.3),rgba(255,255,255,.05) 70%)',dalga:'#5ee0d6'},
+ turuncu:{bg:'linear-gradient(165deg,#b33c00 0%,#e8650a 50%,#ff9a2e 100%)',fg:'#fff',kutu:'rgba(255,255,255,.17)',vurgu:'#0b2a4a',vfg:'#fff',panel:'radial-gradient(circle at 50% 40%,rgba(255,255,255,.32),rgba(255,255,255,.06) 70%)',dalga:'#ffc380'},
+ beyaz:{bg:'linear-gradient(170deg,#ffffff 0%,#e6f2fb 60%,#cfe6f7 100%)',fg:'#0b2a4a',kutu:'rgba(14,106,168,.09)',vurgu:'#0e6aa8',vfg:'#fff',panel:'radial-gradient(circle at 50% 40%,rgba(14,106,168,.16),rgba(14,106,168,.03) 70%)',dalga:'#8ccaf0'},
+ yesil:{bg:'linear-gradient(165deg,#0f3d13 0%,#22672a 50%,#4fa55a 100%)',fg:'#fff',kutu:'rgba(255,255,255,.14)',vurgu:'#ffd23f',vfg:'#1b3a1c',panel:'radial-gradient(circle at 50% 40%,rgba(255,255,255,.28),rgba(255,255,255,.05) 70%)',dalga:'#8fd99a'}};
+
+const logo=(T)=>`<svg viewBox="0 0 64 64" width="${78*S}" height="${78*S}"><circle cx="32" cy="32" r="30" fill="${T.vurgu}"/><path d="M32 12 C 24 24 18 31 18 39 a14 14 0 0 0 28 0 C 46 31 40 24 32 12Z" fill="${T.vfg}"/><path d="M26 40 a6 6 0 0 0 6 6" stroke="${T.vurgu}" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+const ustBlok=(T)=>`<div class="ust">${logo(T)}<div>FUVSU POMPA<small>Teknik Servis · Tesisat · Montaj</small></div></div>`;
+const telBlok=(T,cagri)=>`<div class="tel" style="background:${T.vurgu};color:${T.vfg}"><svg viewBox="0 0 24 24" width="${70*S}" height="${70*S}"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><div><small>${esc(cagri||'Hemen arayın')}</small>${TEL}</div></div><div class="alt"><span>📍 ${BOLGE}</span><span>${IG}</span></div>`;
+const dekor=(T)=>`<svg class="dekor" viewBox="0 0 1080 ${H}" preserveAspectRatio="none">
+ <defs><pattern id="izgara" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="${T.fg}" stroke-opacity=".05" stroke-width="2"/></pattern></defs>
+ <rect width="1080" height="${H}" fill="url(#izgara)"/>
+ <path d="M0 ${H-150} C 200 ${H-210} 380 ${H-90} 560 ${H-140} S 900 ${H-200} 1080 ${H-150} V ${H} H0Z" fill="${T.dalga}" opacity=".18"/>
+ <path d="M0 ${H-90} C 240 ${H-140} 420 ${H-40} 640 ${H-90} S 940 ${H-130} 1080 ${H-80} V ${H} H0Z" fill="${T.dalga}" opacity=".22"/>
+ ${[[960,260,26],[1010,340,12],[60,700,18],[110,760,9],[990,900,14]].map(([x,y,r])=>`<circle cx="${x}" cy="${POST?y*0.7:y}" r="${r}" fill="none" stroke="${T.fg}" stroke-opacity=".22" stroke-width="3"/>`).join('')}
+</svg>`;
+const baseCss=(T)=>`@font-face{font-family:P;src:url(${FONT('Poppins-Bold.ttf')});font-weight:700}@font-face{font-family:P;src:url(${FONT('Poppins-Medium.ttf')});font-weight:500}@font-face{font-family:P;src:url(${FONT('Poppins-Regular.ttf')});font-weight:400}@font-face{font-family:Poppins;src:url(${FONT('Poppins-Bold.ttf')});font-weight:700}@font-face{font-family:Poppins;src:url(${FONT('Poppins-Medium.ttf')});font-weight:600}
+*{margin:0;box-sizing:border-box}body{width:${W}px;height:${H}px;font-family:P,"DejaVu Sans",Arial,sans-serif;color:${T.fg};overflow:hidden;position:relative}
+.dekor{position:absolute;inset:0;width:100%;height:100%;z-index:0}.ic{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:${100*S}px ${72*S}px ${80*S}px}
+.ust{display:flex;align-items:center;gap:${20*S}px;font-size:${44*S}px;letter-spacing:5px;font-weight:700;line-height:1.1}.ust small{display:block;font-size:${26*S}px;letter-spacing:1px;opacity:.85;margin-top:6px;font-weight:500}
+.panel{margin:${38*S}px 0 ${30*S}px;border-radius:${44*S}px;background:${T.panel};border:2px solid ${T.fg==='#fff'?'rgba(255,255,255,.18)':'rgba(14,106,168,.18)'};padding:${18*S}px;display:flex;align-items:center;justify-content:center}
+.panel svg{width:100%;height:100%}
+.govde{flex:1;display:flex;flex-direction:column;justify-content:center}
+.tel{border-radius:${30*S}px;padding:${28*S}px ${40*S}px;font-weight:700;font-size:${72*S}px;letter-spacing:1px;display:flex;align-items:center;gap:${24*S}px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.tel small{display:block;font-size:${28*S}px;font-weight:500;letter-spacing:0;margin-bottom:2px}
+.alt{display:flex;justify-content:space-between;font-size:${28*S}px;opacity:.92;margin-top:${22*S}px;font-weight:500}
+.etk{display:inline-flex;align-self:flex-start;align-items:center;gap:10px;background:${T.vurgu};color:${T.vfg};border-radius:40px;padding:${10*S}px ${28*S}px;font-size:${30*S}px;font-weight:700;margin-bottom:${22*S}px}
+h1{font-size:${88*S}px;line-height:1.08;margin-bottom:${22*S}px;font-weight:700;letter-spacing:-.5px}p{font-size:${42*S}px;line-height:1.38;font-weight:400;opacity:.95}
+.kutu{background:${T.kutu};border-radius:${30*S}px;padding:${30*S}px ${40*S}px;margin-top:${28*S}px;font-size:${40*S}px;line-height:1.45}
+.mad{display:flex;flex-wrap:wrap;gap:${16*S}px;margin-top:${26*S}px}.mad div{display:flex;align-items:center;gap:${14*S}px;background:${T.kutu};border-radius:${24*S}px;padding:${14*S}px ${24*S}px;font-size:${36*S}px;font-weight:500}
+.mad b{background:${T.vurgu};color:${T.vfg};border-radius:50%;width:${50*S}px;height:${50*S}px;display:flex;align-items:center;justify-content:center;font-size:${28*S}px;flex:none}
+.num{display:flex;gap:${22*S}px;align-items:center;font-size:${40*S}px;margin:${14*S}px 0;font-weight:500;line-height:1.25}.num b{background:${T.vurgu};color:${T.vfg};border-radius:50%;width:${66*S}px;height:${66*S}px;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:${34*S}px}
+.ikili{display:grid;grid-template-columns:1fr 1fr;gap:${24*S}px;margin:${34*S}px 0 ${26*S}px}.ikili>div{border-radius:${36*S}px;padding:${18*S}px;background:${T.kutu};display:flex;flex-direction:column}
+.ikili .rozet{align-self:flex-start;border-radius:30px;padding:${8*S}px ${22*S}px;font-weight:700;font-size:${30*S}px;color:#fff;margin:${8*S}px}
+.ikili h3{font-size:${44*S}px;margin:${10*S}px ${10*S}px 4px;line-height:1.15}.ikili span{font-size:${32*S}px;margin:0 ${10*S}px ${10*S}px;opacity:.92;line-height:1.3}`;
+
+function sahneSvg(k){const ad=k.sahne||CIZIM_SAHNE[k.cizim];if(!ad)return '';return sahne(ad,{etiketler:k.etiketler,aci:k.aci,zayif:k.zayif,ekran:k.ekran});}
 function kartHtml(k){const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
- const ust=`<div class="ust">FUVSU POMPA<small>Teknik Servis · Tesisat · Montaj</small></div>`;
- const wrap=`body{background:${T.bg};display:flex;flex-direction:column;justify-content:space-between;padding:${120*S}px ${80*S}px ${110*S}px}`;
+ const svg=sahneSvg(k);
+ const ph=(oran)=>svg?`<div class="panel" style="height:${Math.round((POST?560:800)*oran)}px">${svg}</div>`:'';
+ const mad=(isaret)=>k.maddeler?.length?`<div class="mad">${k.maddeler.map((m,i)=>`<div><b>${isaret==='#'?i+1:isaret}</b>${esc(m)}</div>`).join('')}</div>`:'';
+ const etk=(t)=>t?`<div class="etk">${esc(t)}</div>`:'';
  let orta;
- if(st==='soru'){orta=`<div style="font-size:${260*S}px;line-height:1;font-weight:800;opacity:.9">?</div><h1 style="font-size:${110*S}px">${esc(k.baslik).replace(/\n/g,'<br>')}</h1><p>${esc(k.metin)}</p>`}
- else if(st==='bilgi'){orta=`<div class="etk">💡 Biliyor muydunuz?</div><h1 style="font-size:${84*S}px">${esc(k.baslik).replace(/\n/g,'<br>')}</h1><p>${esc(k.metin)}</p>${k.maddeler?.length?`<div class="kutu">${k.maddeler.map(m=>'• '+esc(m)).join('<br>')}</div>`:''}`}
- else if(st==='sss'){orta=`<div class="etk">❓ Sık sorulan</div><h1 style="font-size:${80*S}px">“${esc(k.baslik).replace(/\n/g,' ')}”</h1><div class="kutu" style="font-size:${46*S}px"><b>Cevap:</b> ${esc(k.metin)}</div>`}
- else if(st==='liste'){orta=`${k.etiket?`<div class="etk">${esc(k.etiket)}</div>`:''}<h1 style="font-size:${88*S}px">${esc(k.baslik).replace(/\n/g,'<br>')}</h1>${(k.maddeler||[]).map((m,i)=>`<div style="display:flex;gap:${28*S}px;align-items:center;font-size:${50*S}px;margin:${22*S}px 0"><span style="background:${T.vurgu};color:${T.vfg};border-radius:50%;width:${84*S}px;height:${84*S}px;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none">${i+1}</span>${esc(m)}</div>`).join('')}`}
- else if(st==='buyuk'){orta=`<h1 style="font-size:${124*S}px;line-height:1">${esc(k.baslik).replace(/\n/g,'<br>')}</h1><p style="font-size:${54*S}px">${esc(k.metin)}</p>`}
- else{orta=`${k.etiket||k.hizmet?`<div class="etk">${esc(k.etiket||k.hizmet)}</div>`:''}<h1>${esc(k.baslik).replace(/\n/g,'<br>')}</h1><p>${esc(k.metin)}</p>${k.maddeler?.length?`<div class="kutu">${k.maddeler.map(m=>'✔ '+esc(m)).join('<br>')}</div>`:''}`}
- const svg=k.cizim?ciz(k.cizim,T.fg==='#fff'?'#ffffff':'#0e6aa8',T.fg==='#fff'?'rgba(255,255,255,.35)':'rgba(14,106,168,.3)'):'';
- const cz=svg?`<div style="width:${(bicim==='post'?380:560)}px;opacity:.95;margin-bottom:${30*S}px">${svg}</div>`:'';
- return `<style>${baseCss(T)}${wrap}</style>${ust}<div>${cz}${orta}</div><div>${telBlok(T,k.cagri)}</div>`;}
+ if(st==='soru'){orta=`${ph(svg?0.92:0)}<div class="govde">${etk(k.etiket||'🤔 Sizde de oluyor mu?')}<h1 style="font-size:${(svg?92:120)*S}px">${br(k.baslik)}</h1><p>${esc(k.metin)}</p>${mad('!')}</div>`}
+ else if(st==='bilgi'){orta=`${ph(0.92)}<div class="govde">${etk(k.etiket||'💡 Biliyor muydunuz?')}<h1 style="font-size:${80*S}px">${br(k.baslik)}</h1><p>${esc(k.metin)}</p>${mad('✓')}</div>`}
+ else if(st==='sss'){orta=`${ph(0.85)}<div class="govde">${etk(k.etiket||'❓ Sık sorulan')}<h1 style="font-size:${74*S}px">“${esc(k.baslik).replace(/\n/g,' ')}”</h1><div class="kutu"><b>Cevap:</b> ${esc(k.metin)}</div></div>`}
+ else if(st==='liste'){orta=`${ph(0.72)}<div class="govde">${etk(k.etiket)}<h1 style="font-size:${78*S}px">${br(k.baslik)}</h1>${(k.maddeler||[]).map((m,i)=>`<div class="num"><b>${i+1}</b>${esc(m)}</div>`).join('')}</div>`}
+ else if(st==='infografik'){orta=`<div class="govde" style="flex:none;margin-top:${44*S}px">${etk(k.etiket||'🔧 Nasıl çalışır?')}<h1 style="font-size:${72*S}px;margin-bottom:0">${br(k.baslik)}</h1></div>${ph(1.02)}<div class="govde">${(k.maddeler||[]).map((m,i)=>`<div class="num" style="font-size:${36*S}px"><b>${i+1}</b>${esc(m)}</div>`).join('')}${k.metin?`<p style="margin-top:${12*S}px;font-size:${36*S}px">${esc(k.metin)}</p>`:''}</div>`}
+ else if(st==='karsilastir'){const yan=(x,ok)=>`<div><div class="rozet" style="background:${ok?'#2bb673':'#e5332a'}">${ok?'✓ Olması gereken':'✗ Sorun'}</div><div style="height:${(POST?320:560)}px">${sahne(x.sahne||'musluk',{zayif:x.zayif,aci:x.aci,ekran:x.ekran})}</div><h3>${esc(x.baslik)}</h3><span>${esc(x.metin)}</span></div>`;
+   orta=`<div class="govde" style="flex:none;margin-top:${44*S}px">${etk(k.etiket||'⚖️ Farkı görün')}<h1 style="font-size:${72*S}px;margin-bottom:0">${br(k.baslik)}</h1></div><div class="ikili">${yan(k.sol||{zayif:true},false)}${yan(k.sag||{},true)}</div><div class="govde">${k.metin?`<p>${esc(k.metin)}</p>`:''}</div>`}
+ else if(st==='buyuk'){orta=`${ph(0.8)}<div class="govde"><h1 style="font-size:${(svg?108:132)*S}px;line-height:1.02">${br(k.baslik)}</h1><p style="font-size:${48*S}px">${esc(k.metin)}</p></div>`}
+ else{orta=`${ph(0.92)}<div class="govde">${etk(k.etiket||k.hizmet)}<h1>${br(k.baslik)}</h1><p>${esc(k.metin)}</p>${mad('✓')}</div>`}
+ return `<style>${baseCss(T)}body{background:${T.bg}}</style>${dekor(T)}<div class="ic">${ustBlok(T)}${orta}<div>${telBlok(T,k.cagri)}</div></div>`;}
+
 let body;
 if(tur==='kart'){const k=JSON.parse(fs.readFileSync(path.join(__dirname,'konular.json')))[+a];body=kartHtml(k);}
 else if(tur==='json'){body=kartHtml(JSON.parse(fs.readFileSync(a)));}
-else{const T=TEMALAR[temaArg]||TEMALAR.mavi;const img='data:image/jpeg;base64,'+fs.readFileSync(a).toString('base64');
-body=`<style>${baseCss({...T,fg:'#fff'})}body{background:#000 url(${img}) center/cover no-repeat;position:relative}
-.ustb{position:absolute;top:0;left:0;right:0;padding:${90*S}px ${70*S}px ${120*S}px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
-.altb{position:absolute;bottom:0;left:0;right:0;padding:${160*S}px ${70*S}px ${100*S}px;background:linear-gradient(transparent,rgba(0,0,0,.82) 35%)}
-.is{font-size:${62*S}px;font-weight:800;margin-bottom:${30*S}px;line-height:1.15}</style>
-<div class="ustb"><div class="ust">FUVSU POMPA<small>Teknik Servis · Tesisat · Montaj</small></div></div>
-<div class="altb">${etiket?`<div class="is">${esc(etiket)}</div>`:''}${telBlok(T.vurgu==='#fff'?TEMALAR.mavi:T,'Servis · Tesisat · Montaj')}</div>`;}
+else{const T0=TEMALAR[temaArg]||TEMALAR.mavi;const T=T0.vurgu==='#ffffff'||T0.fg!=='#fff'?TEMALAR.mavi:T0;const img='data:image/jpeg;base64,'+fs.readFileSync(a).toString('base64');
+body=`<style>${baseCss({...T,fg:'#fff'})}body{background:${T.bg}}
+.foto{position:relative;flex:1;margin:${34*S}px 0 ${30*S}px;border-radius:${44*S}px;overflow:hidden;background:#000 url(${img}) center/cover no-repeat;box-shadow:0 18px 50px rgba(0,0,0,.4);border:6px solid rgba(255,255,255,.85)}
+.foto .is{position:absolute;left:0;right:0;bottom:0;padding:${120*S}px ${40*S}px ${36*S}px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:${56*S}px;font-weight:700;line-height:1.15}
+.foto .rz{position:absolute;top:${30*S}px;left:${30*S}px;background:${T.vurgu};color:${T.vfg};border-radius:40px;padding:${10*S}px ${26*S}px;font-weight:700;font-size:${30*S}px}</style>
+${dekor(T)}<div class="ic">${ustBlok(T)}<div class="foto"><div class="rz">📸 Sahadan</div>${etiket?`<div class="is">${esc(etiket)}</div>`:''}</div><div>${telBlok(T,'Servis · Tesisat · Montaj')}</div></div>`;}
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:W,height:H}});
-await p.setContent('<!doctype html><meta charset="utf-8">'+body);await p.waitForTimeout(300);
-await p.screenshot({path:cikti,type:'jpeg',quality:90});await b.close();})();
+await p.setContent('<!doctype html><meta charset="utf-8">'+body,{waitUntil:'load'});await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(250);
+await p.screenshot({path:cikti,type:'jpeg',quality:92});await b.close();})();

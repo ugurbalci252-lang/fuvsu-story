@@ -19,3 +19,10 @@ Kurallar: fiyat yok; "ücretsiz", "garanti", "7/24" gibi doğrulanmamış vaat y
 - Stil + tema + çizim kombinasyonunu her gün değiştir; dünkü kombinasyonları (durum.json gunler) tekrarlama.
 - İş fotoğrafları: TARİH SINIRI YOK — Fotoğraflar klasöründeki tüm uygun fotoğraflar kullanılabilir (kullanilanFotolar'da olmayanlar; yeniler öncelikli). Pompa, montaj, tesisat, çalışma anı fotoğraflarının hepsi uygundur. Bu kural görev metnindeki "son 10/14 gün" sınırının yerine geçer.
 - İnternetten başkasına ait fotoğraf/logo/marka görseli KULLANMA (telif). Sadece kendi iş fotoğraflarımız + bizim çizimlerimiz.
+
+## Zengin görsel kuralları (kullanıcı isteği 08.11: "sade yazı değil, hidrofor/pompa resimleriyle zengin olsun")
+- HER kartta (stil "buyuk" dahil) mutlaka bir renkli `sahne` kullan: hidrofor | dalgic | bina | tank | manometre | drenaj | arac | musluk | alet | pano (sahneler.js). Sahneyi konuya göre seç: tank/ön basınç → tank; basınç düşük/yüksek → manometre (aci: -100 düşük, 0 normal, +100 yüksek) veya musluk; kuyu/derin su → dalgic; apartman/site/yönetici → bina; su baskını/bodrum → drenaj; bakım/pompa dairesi → hidrofor veya pano; servise geliyoruz/bölge → arac; tamir/ustalık → alet.
+- `etiketler` ile sahnedeki parçalara 2-4 kısa etiket yaz (ör. ["Basınç tankı","Vana","Manometre","Pano"]); etiket kısa olsun (en fazla ~16 harf).
+- Yeni stiller: "infografik" (sahne + numaralı etiketler + numaralı açıklamalar; nasıl çalışır / parçalar) ve "karsilastir" (sol: sorunlu, sağ: olması gereken; ör. musluk zayif:true vs normal, manometre aci düşük vs normal).
+- Her gün story'lerden en az biri infografik veya karsilastir olsun; aynı gün aynı sahneyi iki kez kullanma.
+- Eski `cizim` alanı otomatik sahneye çevrilir ama yeni kartlarda `sahne` kullan.

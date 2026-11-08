@@ -38,7 +38,7 @@ function fayans(w, h, renk, derz, adim) {
 // ---------- oda ----------
 const gece = V === 'gece';
 const zeminCv = gurultu(1024, 1024, '#5d636a', 22, 60, 3);
-const zeminM = new THREE.MeshPhysicalMaterial({ map: doku(zeminCv, 3), roughness: 0.42, metalness: 0, clearcoat: 0.55, clearcoatRoughness: 0.35, envMapIntensity: 0.5 });
+const zeminM = new THREE.MeshPhysicalMaterial({ map: doku(zeminCv, 3), roughness: 0.42, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.18, envMapIntensity: 0.7 });
 const zemin = mesh(new THREE.PlaneGeometry(14, 14), zeminM, 0, 0, 0); zemin.rotation.x = -Math.PI / 2; zemin.castShadow = false;
 // sarı güvenlik şeridi
 const serit = mesh(new THREE.PlaneGeometry(4.6, 0.06), new THREE.MeshStandardMaterial({ color: 0xf2c200, roughness: 0.6 }), 0.2, 0.002, 0.95); serit.rotation.x = -Math.PI / 2;
@@ -74,6 +74,33 @@ membranTank(null, 1.75, -0.35, 1.05, 0.95);
 boru([[1.05, 0.08, 0.36], [1.75, 0.08, 0.36], [1.75, 0.08, -0.35]], 0.03, M.celik);
 // yatay pompa (sağ önde, ikinci ekipman)
 if (V === 'pompa' || V === 'genel' || V === 'gece') yatayPompa(null, -2.3, 0.55);
+
+// ---------- detay ve aksesuarlar ----------
+const { Reflector } = await import('./jsm/objects/Reflector.js');
+// (yansıma kapatıldı: fazla ayna gibi duruyordu)
+// izolasyonlu (beyaz kılıflı) sıcak su hattı
+const izo = new THREE.MeshStandardMaterial({ color: 0xe9ecef, roughness: 0.75, metalness: 0 });
+boru([[-3.2, 3.08, duvarZ + 0.15], [3.5, 3.08, duvarZ + 0.15]], 0.085, izo);
+for (let x = -2.6; x < 3.5; x += 0.9) mesh(new THREE.TorusGeometry(0.087, 0.006, 6, 32), M.celikMat, x, 3.08, duvarZ + 0.15).rotation.y = Math.PI / 2;
+// duvar hattında volanlı sürgülü vana + manometre
+const vg = new THREE.Group(); vg.position.set(-1.6, 2.62, duvarZ + 0.16); scene.add(vg);
+mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.1, 32), maviBoru, 0, 0, 0, vg).rotation.z = Math.PI / 2;
+mesh(new THREE.BoxGeometry(0.14, 0.26, 0.16), maviBoru, 0, 0.12, 0, vg);
+mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.22, 12), M.celik, 0, 0.32, 0, vg);
+const vol = mesh(new THREE.TorusGeometry(0.11, 0.012, 10, 40), M.kolKirmizi, 0, 0.43, 0, vg); vol.rotation.x = Math.PI / 2;
+for (let i = 0; i < 4; i++) { const k = mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.22, 8), M.kolKirmizi, 0, 0.43, 0, vg); k.rotation.z = Math.PI / 2; k.rotation.y = i * Math.PI / 4; }
+manometre(-0.9, 2.82, duvarZ + 0.27, null, 0.07); boru([[-0.9, 2.62, duvarZ + 0.2], [-0.9, 2.72, duvarZ + 0.2]], 0.01, M.pirinc);
+// genel uyarı levhası (markasız)
+const lv = tabelaDoku([['⚠', 120, 120, '#111'], ['DİKKAT', 70, 200, '#111'], ['YETKİSİZ GİRİLMEZ', 34, 245, '#111']], 512, 280, '#ffd400');
+mesh(new THREE.PlaneGeometry(0.5, 0.28), new THREE.MeshStandardMaterial({ map: lv, roughness: 0.5 }), 0.75, 1.75, duvarZ + 0.005);
+// yangın söndürücü (markasız)
+const ys = new THREE.Group(); ys.position.set(-2.85, 0, -0.55); scene.add(ys);
+mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.5, 40), M.kirmizi, 0, 0.3, 0, ys); mesh(new THREE.SphereGeometry(0.085, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2), M.kirmizi, 0, 0.55, 0, ys);
+mesh(new THREE.CylinderGeometry(0.025, 0.03, 0.08, 16), M.siyah, 0, 0.66, 0, ys); kutu(0.14, 0.02, 0.03, M.siyah, 0.04, 0.7, 0, ys);
+mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0.03, 0.68, 0), new THREE.Vector3(0.12, 0.6, 0.02), new THREE.Vector3(0.1, 0.3, 0.06)]), 24, 0.012, 8), M.siyah);
+// kablo kanalından panoya inen kablo borusu
+boru([[-1.25, 3.4, duvarZ + 0.2], [-1.25, 1.27, duvarZ + 0.2], [-1.25, 1.27, 0.0]], 0.022, M.siyah);
+
 // zemin süzgeci
 const suzgec = mesh(new THREE.CircleGeometry(0.12, 32), new THREE.MeshStandardMaterial({ color: 0x3a3f45, metalness: 0.8, roughness: 0.5 }), 0.6, 0.003, 1.3); suzgec.rotation.x = -Math.PI / 2;
 // zemine hafif su lekesi (parlak)

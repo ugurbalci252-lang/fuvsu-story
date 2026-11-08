@@ -33,6 +33,10 @@ const M = {
   cam: new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0.02, transparent: true, opacity: 0.18, clearcoat: 1 }),
 };
 const ankraj = {}; // etiket noktaları (3B)
+let _plaka; function PLAKA() { if (_plaka) return _plaka; const cv = document.createElement('canvas'); cv.width = 256; cv.height = 128; const c = cv.getContext('2d');
+  const g = c.createLinearGradient(0, 0, 256, 128); g.addColorStop(0, '#e9edf1'); g.addColorStop(1, '#b8c0c8'); c.fillStyle = g; c.fillRect(0, 0, 256, 128);
+  c.fillStyle = '#222'; c.font = 'bold 22px Arial'; c.fillText('3~ MOT', 14, 28); c.font = '15px Arial'; ['kW  5.5     V  400', 'Hz  50     IP 55', 'min⁻¹ 2900   cos φ 0.86'].forEach((t, i) => c.fillText(t, 14, 56 + i * 22));
+  c.strokeStyle = '#555'; c.strokeRect(4, 4, 248, 120); const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; _plaka = new THREE.MeshStandardMaterial({ map: tx, metalness: 0.6, roughness: 0.35 }); return _plaka; }
 
 // ---------- yardımcılar ----------
 function mesh(geo, mat, x = 0, y = 0, z = 0, parent) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; (parent || scene).add(m); return m; }
@@ -67,7 +71,7 @@ function kanatliMotor(r, l, p, eksen = 'x') { // gövde kanatlı elektrik motoru
   kutu(r * 0.8, l * 0.04, r * 0.8, M.maviKoyu, r * 1.62, l * 0.1, 0, g).rotation.z = Math.PI / 2;
   silX(r * 0.08, r * 0.3, M.siyah, r * 1.2, l * 0.1 - l * 0.12, r * 0.42, g, 16).rotation.set(Math.PI / 2, 0, 0);
   // etiket plakası
-  const pl = kutu(r * 0.02, l * 0.22, r * 0.5, M.celik, 0, 0, 0, g); pl.position.set(Math.cos(Math.PI * 0.25) * r * 1.13, 0, -Math.sin(Math.PI * 0.25) * r * 1.13); pl.rotation.y = Math.PI * 0.25;
+  const pl = kutu(r * 0.02, l * 0.22, r * 0.5, PLAKA(), 0, 0, 0, g); pl.position.set(Math.cos(Math.PI * 0.25) * r * 1.13, 0, -Math.sin(Math.PI * 0.25) * r * 1.13); pl.rotation.y = Math.PI * 0.25;
   if (eksen === 'x') g.rotation.z = Math.PI / 2;
   return g;
 }

@@ -12,6 +12,11 @@
 //  etiket, baslik (\n ile satır), metin, maddeler:[...], cagri
 //  karsilastir için: sol:{baslik,metin,sahne,zayif}, sag:{baslik,metin,sahne,zayif}
 //  (eski 'cizim' alanı da çalışır: otomatik olarak uygun renkli sahneye çevrilir)
+//  gorsel : GERÇEKÇİ 3B görsel (öncelikli): hidrofor-a | hidrofor-b | pompa-a | pompa-b | dikey | tank | dalgic | drenaj | vana |
+//           manometre-dusuk | manometre-normal | manometre-yuksek   (3d/gorseller/). gorsel varsa sahne yerine o kullanılır.
+//           etiketler dizi ise sırayla: hidrofor:[tank,vana,manometre,pano,pompa,kollektor] pompa:[motor,salyangoz,basma,emis]
+//           tank:[tank,sibop] dalgic:[motor,izgara,pompaKismi,cikis] drenaj:[govde,samandira,cikis]
+//           ya da nesne: {"tank":"Basınç tankı","pano":"Kumanda panosu"}. karsilastir'da sol/sag içinde de gorsel kullanılabilir.
 const {chromium}=require('playwright');const sahne=require('./sahneler.js');const fs=require('fs');const path=require('path');
 const TEL='0501 042 44 57', IG='@fuvsuofficall', BOLGE='İstanbul · Kocaeli · Sakarya';
 const [,,bicim,tur,a,cikti,etiket,temaArg]=process.argv;
@@ -58,10 +63,28 @@ h1{font-size:${88*S}px;line-height:1.08;margin-bottom:${22*S}px;font-weight:700;
 .ikili .rozet{align-self:flex-start;border-radius:30px;padding:${8*S}px ${22*S}px;font-weight:700;font-size:${30*S}px;color:#fff;margin:${8*S}px}
 .ikili h3{font-size:${44*S}px;margin:${10*S}px ${10*S}px 4px;line-height:1.15}.ikili span{font-size:${32*S}px;margin:0 ${10*S}px ${10*S}px;opacity:.92;line-height:1.3}`;
 
+// ---- Gerçekçi 3B görseller (3d/gorseller/*.png, 3d/uret.js ile üretildi) ----
+const G3=path.join(__dirname,'3d','gorseller');
+const G3_SIRA={hidrofor:['tank','vana','manometre','pano','pompa','kollektor'],pompa:['motor','salyangoz','basma','emis'],tank:['tank','sibop'],dalgic:['motor','izgara','pompaKismi','cikis'],drenaj:['govde','samandira','cikis']};
+function g3Html(ad,etiketler,yuk){const f=path.join(G3,ad+'.png');if(!fs.existsSync(f))return '';
+ const img='data:image/png;base64,'+fs.readFileSync(f).toString('base64');const an=JSON.parse(fs.readFileSync(f.replace(/\.png$/,'.json')));
+ const tur=ad.split('-')[0];let et=[];
+ if(Array.isArray(etiketler)){const sira=G3_SIRA[tur]||Object.keys(an);et=etiketler.map((t,i)=>[sira[i],t]).filter(([k])=>an[k]);}
+ else if(etiketler&&typeof etiketler==='object')et=Object.entries(etiketler).filter(([k])=>an[k]);
+ const L=et.map(([k,t],i)=>{const [x,y]=an[k];return {i,t,px:x*1400,py:y*1000,sag:x>=0.5,w:Math.max(220,String(t).length*29+120)}});
+ for(const taraf of [true,false]){let son=-1e9;L.filter(l=>l.sag===taraf).sort((p,q)=>p.py-q.py).forEach(l=>{l.ly=Math.max(l.py,son+120,70);son=l.ly;});
+  const tas=L.filter(l=>l.sag===taraf&&l.ly>940);if(tas.length){const k=Math.max(...tas.map(l=>l.ly))-940;L.filter(l=>l.sag===taraf).forEach(l=>l.ly-=k);}}
+ const svg=L.map(l=>{const bx=l.sag?1385-l.w:15;const ux=l.sag?bx:bx+l.w;
+  return `<line x1="${l.px}" y1="${l.py}" x2="${ux}" y2="${l.ly}" stroke="#fff" stroke-width="10"/><line x1="${l.px}" y1="${l.py}" x2="${ux}" y2="${l.ly}" stroke="#0b2a4a" stroke-width="5"/><circle cx="${l.px}" cy="${l.py}" r="20" fill="#ffd23f" stroke="#0b2a4a" stroke-width="5"/>
+  <rect x="${bx}" y="${l.ly-46}" width="${l.w}" height="92" rx="46" fill="#fff" stroke="#0b2a4a" stroke-width="5"/><circle cx="${bx+46}" cy="${l.ly}" r="32" fill="#0e6aa8"/><text x="${bx+46}" y="${l.ly+12}" text-anchor="middle" font-size="34" font-weight="700" fill="#fff" font-family="Poppins">${l.i+1}</text><text x="${bx+92}" y="${l.ly+14}" font-size="40" font-weight="700" fill="#0b2a4a" font-family="Poppins">${esc(l.t)}</text>`}).join('');
+ return `<div style="position:relative;width:100%;height:${yuk}px;border-radius:${36*S}px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#ffffff 0%,#eef4f9 55%,#d6e3ee 100%)"><div style="position:absolute;left:8%;right:8%;bottom:7%;height:12%;background:radial-gradient(ellipse,rgba(11,42,74,.18),transparent 70%)"></div><img src="${img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain"><svg viewBox="0 0 1400 1000" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%">${svg}</svg></div>`;}
 function sahneSvg(k){const ad=k.sahne||CIZIM_SAHNE[k.cizim];if(!ad)return '';return sahne(ad,{etiketler:k.etiketler,aci:k.aci,zayif:k.zayif,ekran:k.ekran});}
-function kartHtml(k){const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
- const svg=sahneSvg(k);
- const ph=(oran)=>svg?`<div class="panel" style="height:${Math.round((POST?560:800)*oran)}px">${svg}</div>`:'';
+function otoGorsel(k){if(k.gorsel||k.stil==='karsilastir')return;
+ if(k.sahne==='hidrofor')k.gorsel=Math.random()<.5?'hidrofor-a':'hidrofor-b';
+ else if(k.sahne==='manometre')k.gorsel=(k.aci??0)<-50?'manometre-dusuk':(k.aci??0)>50?'manometre-yuksek':'manometre-normal';}
+function kartHtml(k){otoGorsel(k);const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'klasik';
+ const svg=sahneSvg(k)||(k.gorsel?' ':'');
+ const ph=(oran)=>{const yk=Math.round((POST?560:800)*oran);if(k.gorsel){const g=g3Html(k.gorsel,k.etiketler,yk-8);if(g)return `<div class="panel" style="height:${yk}px;padding:${8*S}px">${g}</div>`;}return svg?`<div class="panel" style="height:${yk}px">${svg}</div>`:'';};
  const mad=(isaret)=>k.maddeler?.length?`<div class="mad">${k.maddeler.map((m,i)=>`<div><b>${isaret==='#'?i+1:isaret}</b>${esc(m)}</div>`).join('')}</div>`:'';
  const etk=(t)=>t?`<div class="etk">${esc(t)}</div>`:'';
  let orta;
@@ -69,8 +92,8 @@ function kartHtml(k){const T=TEMALAR[k.tema]||TEMALAR.mavi;const st=k.stil||'kla
  else if(st==='bilgi'){orta=`${ph(0.92)}<div class="govde">${etk(k.etiket||'💡 Biliyor muydunuz?')}<h1 style="font-size:${80*S}px">${br(k.baslik)}</h1><p>${esc(k.metin)}</p>${mad('✓')}</div>`}
  else if(st==='sss'){orta=`${ph(0.85)}<div class="govde">${etk(k.etiket||'❓ Sık sorulan')}<h1 style="font-size:${74*S}px">“${esc(k.baslik).replace(/\n/g,' ')}”</h1><div class="kutu"><b>Cevap:</b> ${esc(k.metin)}</div></div>`}
  else if(st==='liste'){orta=`${ph(0.72)}<div class="govde">${etk(k.etiket)}<h1 style="font-size:${78*S}px">${br(k.baslik)}</h1>${(k.maddeler||[]).map((m,i)=>`<div class="num"><b>${i+1}</b>${esc(m)}</div>`).join('')}</div>`}
- else if(st==='infografik'){orta=`<div class="govde" style="flex:none;margin-top:${44*S}px">${etk(k.etiket||'🔧 Nasıl çalışır?')}<h1 style="font-size:${72*S}px;margin-bottom:0">${br(k.baslik)}</h1></div>${ph(1.02)}<div class="govde">${(k.maddeler||[]).map((m,i)=>`<div class="num" style="font-size:${36*S}px"><b>${i+1}</b>${esc(m)}</div>`).join('')}${k.metin?`<p style="margin-top:${12*S}px;font-size:${36*S}px">${esc(k.metin)}</p>`:''}</div>`}
- else if(st==='karsilastir'){const yan=(x,ok)=>`<div><div class="rozet" style="background:${ok?'#2bb673':'#e5332a'}">${ok?'✓ Olması gereken':'✗ Sorun'}</div><div style="height:${(POST?320:560)}px">${sahne(x.sahne||'musluk',{zayif:x.zayif,aci:x.aci,ekran:x.ekran})}</div><h3>${esc(x.baslik)}</h3><span>${esc(x.metin)}</span></div>`;
+ else if(st==='infografik'){orta=`<div class="govde" style="flex:none;margin-top:${44*S}px">${etk(k.etiket||'🔧 Nasıl çalışır?')}<h1 style="font-size:${72*S}px;margin-bottom:0">${br(k.baslik)}</h1></div>${ph(0.84)}<div class="govde">${(k.maddeler||[]).map((m,i)=>`<div class="num" style="font-size:${36*S}px"><b>${i+1}</b>${esc(m)}</div>`).join('')}${k.metin?`<p style="margin-top:${12*S}px;font-size:${36*S}px">${esc(k.metin)}</p>`:''}</div>`}
+ else if(st==='karsilastir'){const yan=(x,ok)=>`<div><div class="rozet" style="background:${ok?'#2bb673':'#e5332a'}">${ok?'✓ Olması gereken':'✗ Sorun'}</div><div style="height:${(POST?320:560)}px">${x.gorsel?g3Html(x.gorsel,x.etiketler,(POST?320:560)):sahne(x.sahne||'musluk',{zayif:x.zayif,aci:x.aci,ekran:x.ekran})}</div><h3>${esc(x.baslik)}</h3><span>${esc(x.metin)}</span></div>`;
    orta=`<div class="govde" style="flex:none;margin-top:${44*S}px">${etk(k.etiket||'⚖️ Farkı görün')}<h1 style="font-size:${72*S}px;margin-bottom:0">${br(k.baslik)}</h1></div><div class="ikili">${yan(k.sol||{zayif:true},false)}${yan(k.sag||{},true)}</div><div class="govde">${k.metin?`<p>${esc(k.metin)}</p>`:''}</div>`}
  else if(st==='buyuk'){orta=`${ph(0.8)}<div class="govde"><h1 style="font-size:${(svg?108:132)*S}px;line-height:1.02">${br(k.baslik)}</h1><p style="font-size:${48*S}px">${esc(k.metin)}</p></div>`}
  else{orta=`${ph(0.92)}<div class="govde">${etk(k.etiket||k.hizmet)}<h1>${br(k.baslik)}</h1><p>${esc(k.metin)}</p>${mad('✓')}</div>`}

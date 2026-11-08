@@ -26,3 +26,10 @@ Kurallar: fiyat yok; "ücretsiz", "garanti", "7/24" gibi doğrulanmamış vaat y
 - Yeni stiller: "infografik" (sahne + numaralı etiketler + numaralı açıklamalar; nasıl çalışır / parçalar) ve "karsilastir" (sol: sorunlu, sağ: olması gereken; ör. musluk zayif:true vs normal, manometre aci düşük vs normal).
 - Her gün story'lerden en az biri infografik veya karsilastir olsun; aynı gün aynı sahneyi iki kez kullanma.
 - Eski `cizim` alanı otomatik sahneye çevrilir ama yeni kartlarda `sahne` kullan.
+
+## GERÇEKÇİ 3B GÖRSELLER (kullanıcı isteği 08.11: "daha gerçekçi resimler olsun") — ÖNCELİKLİ
+- Ekipman anlatılıyorsa `gorsel` alanını kullan (3d/gorseller/ içindeki gerçekçi 3B ürün çekimleri): hidrofor-a, hidrofor-b (3 pompalı paket hidrofor + tank + pano), pompa-a, pompa-b (santrifüj pompa+motor), dikey (dikey çok kademeli pompa), tank (membranlı basınç tankı), dalgic (dalgıç pompa), drenaj (drenaj pompası + şamandıra), vana (küresel vana), manometre-dusuk / manometre-normal / manometre-yuksek.
+- Etiketler 3B görselin parçalarına otomatik oturur (render.js başındaki sıra listesine bak). karsilastir'da sol/sag içinde gorsel kullan (ör. manometre-dusuk vs manometre-normal).
+- Renkli çizim `sahne` sadece kesit/şema gereken konularda: bina (apartman kesiti), dalgic sahnesi (kuyu kesiti), tank sahnesi (tankın içi: hava/membran/su), drenaj sahnesi (su basmış bodrum), musluk (akış karşılaştırma), arac (servis aracı).
+- Günde kartların en az yarısı 3B `gorsel` ile olsun. Aynı gün aynı görseli iki kez kullanma.
+- Yeni 3B görsel gerekirse: 3d/sahne3d.js içine model ekle → `node 3d/uret.js <model> 3d/gorseller/<ad>.png <yaw> <pitch> 1400 1000 <ibre> <zoom>` (haftalık gözden geçirmede yapılabilir).

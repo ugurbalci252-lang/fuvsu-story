@@ -43,7 +43,8 @@
     "afis-foto/mavi/fabrika: fabrika ve OSB'ler için pompa servisi (kurumsal)",
     "vitrin/yesil/pompa-b+gece: eski pompa yerine doğru pompa (montaj)"
    ],
-   "muzik": "🎵 Müzik: sade, ilham verici kurumsal — Instagram'da ara: corporate, inspiring, minimal"
+   "muzik": "🎵 Müzik: sade, ilham verici kurumsal — Instagram'da ara: corporate, inspiring, minimal",
+   "post": "afis-foto/lacivert/apartmanlar: yöneticilere planlı pompa dairesi bakımı"
   }
  ],
  "postKartIndex": 5,
@@ -60,6 +61,14 @@
    "yaklasim": "sss (sss/lacivert/damla)",
    "tur": "kart",
    "ilkCumle": "Hidroforunuz su açmadığınız hâlde kısa kısa çalışıp duruyor mu?",
+   "google": true
+  },
+  {
+   "tarih": "2026-11-09",
+   "yaklasim": "yoneticilere-ozel (afis-foto/lacivert/apartmanlar)",
+   "tur": "afis-foto",
+   "gorsel": "gorseller/2026-11-09-post.jpg",
+   "ilkCumle": "Apartmanınızın pompa dairesine en son ne zaman bakıldı?",
    "google": true
   }
  ]

@@ -71,5 +71,22 @@
    "ilkCumle": "Apartmanınızın pompa dairesine en son ne zaman bakıldı?",
    "google": true
   }
+ ],
+ "reels": [
+  {
+   "tarih": "2026-11-09",
+   "konu": "hidrofor bozulma işaretleri + bakım kontrol listesi",
+   "sahneler": [
+    "foto/pompa-dairesi",
+    "urun/hidrofor-a",
+    "liste/vana",
+    "cta"
+   ],
+   "muzik": {
+    "stil": "motive",
+    "tohum": 2611
+   },
+   "ilkCumle": "Hidrofor bozulmadan önce sinyal verir"
+  }
  ]
 }

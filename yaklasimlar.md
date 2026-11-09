@@ -61,3 +61,12 @@ Kurallar: fiyat yok; "ücretsiz", "garanti", "7/24" gibi doğrulanmamış vaat y
 - Gönderi saati: 06.11 gönderisi 08:03'te çıktı. Farklı saat denemek için gelecek hafta 1 gönderiyi akşam 19:00-21:00 arası planla, sonucu karşılaştır.
 - Daha fazla veri için: her gün en az 1 gönderi (story'ye ek) — hesap küçükken gönderi erişimi takipçi dışı keşfe açılan tek kanal.
 - hashtagler.json yenilendi: pompadairesi/hidroforarıza + yönetici etiketleri + ilçe etiketleri (darıca, çayırova, pendik, tuzla, kartal). 10-15 etiket, karışık kullan.
+
+## REELS VİDEOLARI (haftada 4: Pzt, Çar, Cuma, Pazar 19:30)
+- Üretim: `node video.js /tmp/r.json videolar/YYYY-MM-DD-reels.mp4` (biçim video.js başında). 1080x1920, 12–20 sn, 3–5 sahne, SON sahne her zaman `cta`.
+- Müzik özgün ve telifsiz: muzik.py ile otomatik üretilir. Her videoda `"muzik":{"stil":...,"tohum":<yeni rastgele sayı>}`; stili konuya göre seç (arıza/acil → enerjik, iş/montaj → motive, bilgi/ipucu → sakin, site/kurum → kurumsal). Aynı stili art arda 2 videodan fazla kullanma. Başka şarkı/ses ASLA eklenmez.
+- İzlenme için: ilk sahnenin ilk 1,5 sn'si merak uyandıran kanca olsun (soru, şaşırtıcı işaret, "bunu yapmayın" vb.); başlık en fazla 3 kısa satır, *vurgu* kelimeli. Yazı az, görüntü çok.
+- Çeşitlilik: art arda iki videoda aynı ilk fotoğraf, aynı 3B ürün veya aynı konu olmasın (durum.json → reels listesi). Sahne türlerini karıştır: foto / urun (3B ürün + etiketler) / liste / cta.
+- Konu fikirleri: hidrofor bozulma işaretleri, basınç düşüklüğü nedenleri, dalgıç pompa kuyu kesiti, drenaj pompası ve su basması, kumanda panosu, periyodik bakım listesi, yönetici/site yöneticisine öneri, fabrika pompa dairesi, "arızayı biz nasıl buluruz" adımları, sık sorulan sorular.
+- Aynı kurallar: fiyat yok, doğrulanmamış vaat yok, müşteri adı/adres/plaka yok, fotoğraftaki kişiler "ekibimiz" değil.
+- Önce `KARE="0:3,1:3.5,..." node video.js ...` ile kareleri üretip bak; taşma/çakışma yoksa tam üret.

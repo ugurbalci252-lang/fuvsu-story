@@ -5,6 +5,7 @@
 //  {"tip":"urun","gorsel":"hidrofor-a","arkaplan":"pompa","baslik":"Bakımda neleri\n*kontrol* ediyoruz?","etiketler":{"tank":"Basınç tankı","pompa":"Pompalar","pano":"Kumanda panosu"},"sure":4.5}
 //  {"tip":"liste","foto":"boru-su","baslik":"Her bakımda","maddeler":["Tank hava basıncı","Membran ve salmastra","Basınç şalteri ve pano"],"sure":4}
 //  {"tip":"cta","cagri":"Keşif için arayın","sure":3.5}
+// "muzik": {"stil":"enerjik|motive|sakin|kurumsal","tohum":123}  (yoksa rastgele; false = sessiz). Müzik muzik.py ile kodla üretilir, telifsizdir.
 // Kurallar: fiyat yok, doğrulanmamış vaat yok, müşteri adı/adres/plaka yok. Telefon ve bölge otomatik eklenir.
 const {chromium}=require('playwright');const fs=require('fs');const path=require('path');const {spawn,execFileSync}=require('child_process');
 const W=1080,H=1920,FPS=30,TEL='0501 042 44 57',IG='@fuvsuofficall',V='#ffcf33';
@@ -110,7 +111,11 @@ function sahneHtml(s){
  await br.close();if(kare)return;
  const liste=path.join(tmp,'liste.txt');fs.writeFileSync(liste,dosyalar.map(f=>`file '${f}'`).join('\n'));const sessiz=path.join(tmp,'v.mp4');
  execFileSync('ffmpeg',['-y','-loglevel','error','-f','concat','-safe','0','-i',liste,'-c','copy',sessiz]);
- // Sessiz ses kanalı (Instagram müziği kullanıcı tarafından eklenir)
- execFileSync('ffmpeg',['-y','-loglevel','error','-i',sessiz,'-f','lavfi','-i','anullsrc=r=44100:cl=stereo','-shortest','-map','0:v','-map','1:a','-c:v','copy','-c:a','aac','-b:a','96k','-movflags','+faststart',cikti+'.tmp.mp4']);
+ // Müzik: muzik.py ile özgün, telifsiz müzik üretilir (spec.muzik:{stil,tohum}; false ise sessiz)
+ const toplam=spec.sahneler.reduce((a,s)=>a+(s.sure||4),0);let sesGir=['-f','lavfi','-i','anullsrc=r=44100:cl=stereo'],af=[];
+ if(spec.muzik!==false){const m=spec.muzik||{};const wav=path.join(tmp,'m.wav');
+  console.log(execFileSync('python3',[path.join(__dirname,'muzik.py'),wav,String(toplam),String(m.tohum||Math.floor(Math.random()*1e6)),m.stil||'']).toString().trim());
+  sesGir=['-i',wav];af=['-af','loudnorm=I=-14:TP=-1.5:LRA=11'];}
+ execFileSync('ffmpeg',['-y','-loglevel','error','-i',sessiz,...sesGir,'-shortest','-map','0:v','-map','1:a',...af,'-c:v','copy','-c:a','aac','-b:a','160k','-ar','44100','-movflags','+faststart',cikti+'.tmp.mp4']);
  fs.renameSync(cikti+'.tmp.mp4',cikti);console.log('hazır',cikti);
 })().catch(e=>{console.error(e);process.exit(1)});
